@@ -1,0 +1,52 @@
+---
+title: "Logboek"
+author: "Kasper Notebomer"
+date: "9/14/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library("ggplot2")
+library("kableExtra")
+library("dplyr")
+```
+
+<!-- * Copyright (c) 2018 Kasper Notebomer. -->
+<!-- * Licensed under GPLv3. See gpl.md -->
+
+
+
+## Introduction
+
+
+## Data exploration
+
+To start off we'll read the given data set using the read.csv function. After that the data structure and the five number summary is viewed to look for any problems with the data that was read in.
+
+```{r}
+data <- read.csv("data/dataFrame_all_sims.csv", sep = ",", header=TRUE)
+str(data)
+```
+```{r}
+sum <- summary(data[c("temperature","sterol.conc","satur.index","PC.conc","ethanol.conc","APL", "thickness", "bending", "tilt", "zorder","compress")])
+sum 
+sum <- sub(".*:", "", sum)
+rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number of NA's")
+
+kable(sum) %>%
+  kable_styling(latex_options = "scale_down")
+```
+Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. There do seem to be some rows that are missing values like the APL, thickness, beding and tilt values. These rows will most likely need to be removed.
+
+```{r}
+chart <- ggplot(data, aes(wt, mpg, colour = factor(cyl), shape = factor(vs) )) + 
+         geom_point()
+```
+
+
+Onderzoeksvraag?
