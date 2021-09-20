@@ -16,6 +16,8 @@ library("kableExtra")
 library("dplyr")
 library(tidyr)
 library(purrr)
+library(ggcorrplot)
+library(reshape2)
 ```
 
 <!-- * Copyright (c) 2018 Kasper Notebomer. -->
@@ -46,20 +48,33 @@ kable(sum) %>%
 Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. There do seem to be some rows that are missing values like the APL, thickness, beding and tilt values. These rows will most likely need to be removed.
 
 ```{r}
-chart <- ggplot(data, aes(temperature, APL, colour = factor(satur.index), shape = factor(ethanol.conc) )) + 
+chart <- ggplot(data, aes(sterol.conc, thickness, colour = factor(sterol.type), shape = factor(tails) )) + 
          geom_point(alpha=1/10) + geom_jitter()
 chart
 ```
 ```{r}
-chart2 <- ggplot(data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
+chart2 <- ggplot(data, aes(bending, satur.index, colour = factor(sterol.type) )) + 
         geom_jitter(alpha=1)
 chart2
 ```
 ```{r}
-p <- ggplot(data, aes(x=APL, colour = factor(tails))) + 
+p <- ggplot(data, aes(x=bending, colour = factor(sterol.type))) + 
   geom_density()
 p
 ```
+```{r}
+cor2 <- data[,9:14]
+cor2 <- na.omit(cor2)
+cormat <- round(cor(cor2),2)
+head(cormat)
+
+melted_cormat <- melt(cormat)
+head(melted_cormat)
+
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()
+```
+
 
 
 Here a codebook is made of all of the abreviations in the dataframe and their meaning.
@@ -84,3 +99,6 @@ write.csv(codebook, "data/codebook.csv", row.names = FALSE)
 Onderzoeksvraag?
 Is it possible to use machine learning to predict the bending regidity of a membrane given the composition of this membrane.
 Is it possible to use machine learning to predict the bending regidity of a membrane given the sterol type and sterol consentration of the membrane.
+
+different dataset:
+Is is possible to use machine learning to identify a bird based on their song?
