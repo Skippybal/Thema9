@@ -48,17 +48,22 @@ kable(sum) %>%
 Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. There do seem to be some rows that are missing values like the APL, thickness, beding and tilt values. These rows will most likely need to be removed.
 
 ```{r}
-chart <- ggplot(data, aes(sterol.conc, thickness, colour = factor(sterol.type), shape = factor(tails) )) + 
+chart <- ggplot(data, aes(temperature, APL, colour = factor(satur.index), shape = factor(ethanol.conc) )) + 
          geom_point(alpha=1/10) + geom_jitter()
 chart
 ```
 ```{r}
-chart2 <- ggplot(data, aes(bending, satur.index, colour = factor(sterol.type) )) + 
+chart2 <- ggplot(data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
         geom_jitter(alpha=1)
 chart2
 ```
 ```{r}
 p <- ggplot(data, aes(x=bending, colour = factor(sterol.type))) + 
+  geom_density()
+p
+```
+```{r}
+p <- ggplot(data, aes(x=APL, colour = factor(tails))) + 
   geom_density()
 p
 ```
