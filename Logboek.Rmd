@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library("ggplot2")
 library("kableExtra")
 library("dplyr")
+library(tidyr)
+library(purrr)
 ```
 
 <!-- * Copyright (c) 2018 Kasper Notebomer. -->
@@ -44,10 +46,41 @@ kable(sum) %>%
 Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. There do seem to be some rows that are missing values like the APL, thickness, beding and tilt values. These rows will most likely need to be removed.
 
 ```{r}
-chart <- ggplot(data, aes(ethanol.conc, APL, colour = factor(tails), shape = factor(sterol.type) )) + 
+chart <- ggplot(data, aes(temperature, APL, colour = factor(satur.index), shape = factor(ethanol.conc) )) + 
          geom_point(alpha=1/10) + geom_jitter()
 chart
+```
+```{r}
+chart2 <- ggplot(data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
+        geom_jitter(alpha=1)
+chart2
+```
+```{r}
+p <- ggplot(data, aes(x=APL, colour = factor(tails))) + 
+  geom_density()
+p
+```
+
+
+Here a codebook is made of all of the abreviations in the dataframe and their meaning.
+```{r}
+colnames(data)
+codebook <- data.frame("Abreviation" = colnames(data), "Type/Class" = sapply(data, class), 
+                       "Desciption" = c("Temperature (Kelvin)", "Sterol type", 
+                                        "Sterol concentration (%)", "Other (phospho)lipids in membrane (headgroup)",
+                                        "Aliphatic tails", "Saturation index (double bonds per tail)", 
+                                        "Phosphatidyl choline concentration (% of non-sterol lipids)", 
+                                        "Ethanol concentration (% of solvent)", "Area per lipid (nm^2)", 
+                                        "Thickness (nm)", "Bending rigidity (kB T)", "Tilt angle (degrees)", 
+                                        "Z-order", "Compressibility (cN / m)"))
+rownames(codebook) <- NULL
+codebook
+sapply(data, typeof)
+
+write.csv(codebook, "data/codebook.csv", row.names = FALSE)
 ```
 
 
 Onderzoeksvraag?
+Is it possible to use machine learning to predict the bending regidity of a membrane given the composition of this membrane.
+Is it possible to use machine learning to predict the bending regidity of a membrane given the sterol type and sterol consentration of the membrane.
