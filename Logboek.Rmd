@@ -30,60 +30,15 @@ library(reshape2)
 
 ## Data exploration
 
-To start off we'll read the given data set using the read.csv function. After that the data structure and the five number summary is viewed to look for any problems with the data that was read in.
-
-```{r}
+# Data reading & codebook
+Before we start we'll read the .csv file containing the data and make a codebook of all of the variables.
+```{r Data reading & structure}
 data <- read.csv("data/dataFrame_all_sims.csv", sep = ",", header=TRUE)
 str(data)
 ```
-```{r}
-sum <- summary(data[c("temperature","sterol.conc","satur.index","PC.conc","ethanol.conc","APL", "thickness", "bending", "tilt", "zorder","compress")])
-sum 
-sum <- sub(".*:", "", sum)
-rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number of NA's")
 
-kable(sum) %>%
-  kable_styling(latex_options = "scale_down")
-```
-Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. There do seem to be some rows that are missing values like the APL, thickness, beding and tilt values. These rows will most likely need to be removed.
-
-```{r}
-chart <- ggplot(data, aes(temperature, APL, colour = factor(satur.index), shape = factor(ethanol.conc) )) + 
-         geom_point(alpha=1/10) + geom_jitter()
-chart
-```
-```{r}
-chart2 <- ggplot(data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
-        geom_jitter(alpha=1)
-chart2
-```
-```{r}
-p <- ggplot(data, aes(x=bending, colour = factor(sterol.type))) + 
-  geom_density()
-p
-```
-```{r}
-p <- ggplot(data, aes(x=APL, colour = factor(tails))) + 
-  geom_density()
-p
-```
-```{r}
-cor2 <- data[,9:14]
-cor2 <- na.omit(cor2)
-cormat <- round(cor(cor2),2)
-head(cormat)
-
-melted_cormat <- melt(cormat)
-head(melted_cormat)
-
-ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile()
-```
-
-
-
-Here a codebook is made of all of the abreviations in the dataframe and their meaning.
-```{r}
+Here a codebook is made of all of the abbreviations in the data frame and their meaning.
+```{r Codebook}
 colnames(data)
 codebook <- data.frame("Abreviation" = colnames(data), "Type/Class" = sapply(data, class), 
                        "Desciption" = c("Temperature (Kelvin)", "Sterol type", 
@@ -100,10 +55,91 @@ sapply(data, typeof)
 write.csv(codebook, "data/codebook.csv", row.names = FALSE)
 ```
 
+# Structure & summary
 
-Onderzoeksvraag?
-Is it possible to use machine learning to predict the bending regidity of a membrane given the composition of this membrane.
-Is it possible to use machine learning to predict the bending regidity of a membrane given the sterol type and sterol consentration of the membrane.
+To start off we'll read the given data set using the read.csv function. After that the data structure and the five number summary is viewed to look for any problems with the data that was read in.
 
-different dataset:
-Is is possible to use machine learning to identify a bird based on their song?
+```{r Five number summary}
+sum <- summary(data[c("temperature","sterol.conc","satur.index","PC.conc","ethanol.conc","APL", "thickness", "bending", "tilt", "zorder","compress")])
+sum <- sub(".*:", "", sum)
+rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number of NA's")
+
+kable(sum) %>%
+  kable_styling(latex_options = "scale_down")
+```
+Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. There do seem to be some rows that are missing values like the APL, thickness, bending and tilt values. These rows will be omitted for plotting and other research seeing as they can't be used.
+
+```{r Omit Na's}
+row.has.na <- apply(data, 1, function(x){any(is.na(x))})
+paste("Number of NA's:", sum(row.has.na))
+
+nona_data <- na.omit(data)
+row.has.na <- apply(nona_data, 1, function(x){any(is.na(x))})
+paste("Number of NA's:", sum(row.has.na))
+
+```
+153 lines with NA's where omitted from the data set.
+
+# Plotting
+
+Now that the rows with NA's have been removed we can plot them using ggplot. First we'll plot the bending area per lipid against the rigidity of the membrane, coloring the points based on the sterol type, to look for any kind of clustering or correlation. 
+We'll also build a function to get the descriptions of the variables from the codebook.
+```{r Codebook function}
+get_des_by_ab <- function(df, abreviation){
+  description <- df[df$Abreviation == abreviation,]$Desciption
+  return(description)
+}
+```
+
+```{r APL Bending plot}
+chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) + 
+         geom_point(alpha=1/10) + xlab(get_des_by_ab(codebook, "APL")) + ylab(get_des_by_ab(codebook, "bending"))
+chart
+```
+Looking at the plot we can see that there is a clear separation in the area per lipid to bending rigidity ratio when comparing no sterol present to both cholesterol and ergosterol. When comparing cholesterol and ergosterol we can't see such a clear separation, there seems to be a lot of overlap.
+
+
+```{r}
+chart <- ggplot(nona_data, aes(temperature, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
+         geom_point(alpha=1/10) + geom_jitter(alpha=1/10)
+chart
+```
+```{r}
+chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
+        geom_jitter(alpha=1)
+chart2
+```
+```{r}
+chart2 <- ggplot(nona_data, aes(bending, APL, colour = factor(sterol.type), shape = factor(sterol.type) )) + 
+        geom_point(alpha=1/10)
+chart2
+```
+```{r}
+p <- ggplot(nona_data, aes(x=bending, colour = factor(sterol.type))) + 
+  geom_density()
+p
+```
+```{r}
+p <- ggplot(nona_data, aes(x=APL, colour = factor(tails))) + 
+  geom_density()
+p
+```
+
+# Heatmap
+
+```{r Heatmap independent variables}
+corrolation <- nona_data[,9:14]
+#cor2 <- na.omit(cor2)
+cormat <- round(cor(corrolation),5)
+head(cormat)
+
+melted_cormat <- melt(cor(cor2))
+head(melted_cormat)
+
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()
+```
+
+
+Research question?
+Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given the area per lipid, the bending rigidity and the compressibility? 
