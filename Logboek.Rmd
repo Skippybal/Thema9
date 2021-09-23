@@ -10,6 +10,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+Setup of the libraryies.
 ```{r}
 library("ggplot2")
 library("kableExtra")
@@ -26,15 +28,14 @@ library(reshape2)
 
 
 ## Introduction
-
+The data was provided by Tsjerk Wassenaar of the RuG. The dataset is not publically available.
 
 ## Data exploration
 
 # Data reading & codebook
-Before we start we'll read the .csv file containing the data and make a codebook of all of the variables.
+Before I start I'll read the .csv file containing the data and I'll also make a codebook of all of the variables and their descriptions.
 ```{r Data reading & structure}
 data <- read.csv("data/dataFrame_all_sims.csv", sep = ",", header=TRUE)
-str(data)
 ```
 
 Here a codebook is made of all of the abbreviations in the data frame and their meaning.
@@ -57,7 +58,13 @@ write.csv(codebook, "data/codebook.csv", row.names = FALSE)
 
 # Structure & summary
 
-To start off we'll read the given data set using the read.csv function. After that the data structure and the five number summary is viewed to look for any problems with the data that was read in.
+
+Here I'll take a look at the structure and the five number summary of the data to look for any problems or discrepancies. 
+
+```{r}
+str(data)
+```
+Looking at the structure of the data, it seems like all of the columns have been read and have the right datatype.
 
 ```{r Five number summary}
 sum <- summary(data[c("temperature","sterol.conc","satur.index","PC.conc","ethanol.conc","APL", "thickness", "bending", "tilt", "zorder","compress")])
@@ -67,7 +74,8 @@ rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number o
 kable(sum) %>%
   kable_styling(latex_options = "scale_down")
 ```
-Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. There do seem to be some rows that are missing values like the APL, thickness, bending and tilt values. These rows will be omitted for plotting and other research seeing as they can't be used.
+Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. When looking at the five number summary there do seem to be some rows that are missing values like the APL, thickness, bending and tilt values. These rows will be omitted for plotting and other research seeing as they can't be used.
+
 
 ```{r Omit Na's}
 row.has.na <- apply(data, 1, function(x){any(is.na(x))})
@@ -76,15 +84,17 @@ paste("Number of NA's:", sum(row.has.na))
 nona_data <- na.omit(data)
 row.has.na <- apply(nona_data, 1, function(x){any(is.na(x))})
 paste("Number of NA's:", sum(row.has.na))
-
 ```
 153 lines with NA's where omitted from the data set.
 
 # Plotting
+## Scater plot
 
 Now that the rows with NA's have been removed we can plot them using ggplot. First we'll plot the bending area per lipid against the rigidity of the membrane, coloring the points based on the sterol type, to look for any kind of clustering or correlation. 
 We'll also build a function to get the descriptions of the variables from the codebook.
+
 ```{r Codebook function}
+# Get the description by the abbreviation from the codebook
 get_des_by_ab <- function(df, abreviation){
   description <- df[df$Abreviation == abreviation,]$Desciption
   return(description)
@@ -92,54 +102,127 @@ get_des_by_ab <- function(df, abreviation){
 ```
 
 ```{r APL Bending plot}
+#Plot APL against bending rigidity
 chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) + 
-         geom_point(alpha=1/10) + xlab(get_des_by_ab(codebook, "APL")) + ylab(get_des_by_ab(codebook, "bending"))
-chart
+  geom_point(alpha=1/10, size=0.5) + 
+  xlab(get_des_by_ab(codebook, "APL")) + 
+  ylab(get_des_by_ab(codebook, "bending"))
+chart + labs(colour = get_des_by_ab(codebook, "sterol.type"))
+chart + labs(colour = get_des_by_ab(codebook, "sterol.type")) + 
+  geom_smooth(method = "loess")
 ```
-Looking at the plot we can see that there is a clear separation in the area per lipid to bending rigidity ratio when comparing no sterol present to both cholesterol and ergosterol. When comparing cholesterol and ergosterol we can't see such a clear separation, there seems to be a lot of overlap.
+Looking at the plot we can see that there is a clear separation in the area per lipid to bending rigidity ratio when comparing no sterol present to both cholesterol and ergosterol. When comparing cholesterol and ergosterol we can't see such a clear separation, there seems to be a lot of overlap. There are also a few outliers that are barely visible at area per lipid 0.4 and bending rigidity 0.
+The correlation seem to inverse logarithmic, so to check this I'll make a log transformed plot later in this EDA.
 
-
+Here I'll plot the temperature against the bending rigidity while coloring based on saturation index, and deciding the shape based on the sterol type.
 ```{r}
+rects <- data.frame(xstart = seq(0,600,300), xend = seq(300,900,300), col = letters[1:3])
+
 chart <- ggplot(nona_data, aes(temperature, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
-         geom_point(alpha=1/10) + geom_jitter(alpha=1/10)
-chart
+  geom_jitter(alpha=1/10) +   
+  xlab(get_des_by_ab(codebook, "temperature")) + 
+  ylab(get_des_by_ab(codebook, "bending")) 
+
+  
+chart + 
+  geom_rect(aes(xmin = -Inf, xmax = 312.9, ymin = -Inf, ymax = Inf), 
+            color="orange",
+            fill = "green", alpha = 0.0001) + 
+  geom_rect(aes(xmin = 313.1, xmax = Inf, ymin = -Inf, ymax = Inf), 
+            color="purple",
+            fill = "yellow", alpha = 0.0001) 
+  #scale_color_manual(name="color", values = c(orange,))
 ```
+When looking at this plot there seem to be a clear separation between a saturation index of 0 while the rest of the values seem to be clustered quite close together. There does seem to be a small separation between 0.5, 1 and 2 values. An interesting observation is that there don't seem to be any data point with a saturation index of more than 0.5 in the 328 kelvin group (the purple box).
+
+Here I plot the APL against the bending regidity again, but here i color by saturation index and choose the shape based on the sterol type.
 ```{r}
 chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
-        geom_jitter(alpha=1)
-chart2
+        geom_jitter(alpha=1, size=0.5)
+chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_by_ab(codebook, "sterol.type"))
 ```
-```{r}
-chart2 <- ggplot(nona_data, aes(bending, APL, colour = factor(sterol.type), shape = factor(sterol.type) )) + 
-        geom_point(alpha=1/10)
-chart2
-```
-```{r}
+In the plot we can see the same kind of correlation as before, but now we can see that there also seem to be some kind of clustering based on the saturation index.
+
+## Density plot
+
+I will now make density plots of some of the variables to see whether or not they look promising in finding class distinctions.
+```{r Density1}
 p <- ggplot(nona_data, aes(x=bending, colour = factor(sterol.type))) + 
-  geom_density()
-p
+  geom_density() +   
+  xlab(get_des_by_ab(codebook, "bending")) + 
+  ylab("Density") 
+p + labs(colour = get_des_by_ab(codebook, "sterol.type"))
 ```
-```{r}
+This plot show that is basically no distinction between cholesterol and ergosterol based on the bending rigidity. However, distinction between no sterol or a sterol does seem to be possible based on the bending rigidity seeing as the peaks of there classes only overlaps a small bit. There does seem to be an odd peak in the no sterol class at around 50 kB/t bending rigidity.
+
+Here I'll plot the density plot for the area per lipid colored by the sterol type.
+```{r Density2}
+p <- ggplot(nona_data, aes(x=APL, colour = factor(sterol.type))) + 
+  geom_density() +
+  xlab(get_des_by_ab(codebook, "APL")) + 
+  ylab("Density") 
+p + labs(colour = get_des_by_ab(codebook, "sterol.type"))
+```
+In this plot it looks like there is absolutely no way of distinguising different classes based on the area per lipid, seeing as the peaks are basically in the same place. But from what we saw before in the scatterplot, we know that paired with the bending rigidity it can be a very useful variable.
+
+Here I'll plot the density plot of the compressability of the membrane
+```{r Density3}
+p <- ggplot(nona_data, aes(x=compress, colour = factor(sterol.type))) + 
+  geom_density()
+p + labs(colour = get_des_by_ab(codebook, "sterol.type"))
+```
+These results also don't look very promising seeing as every peak is around the same place again.
+
+Here is a density plot of the are per lipid colored by the aliphatic tails.
+```{r Density3}
 p <- ggplot(nona_data, aes(x=APL, colour = factor(tails))) + 
   geom_density()
-p
+p + labs(colour = get_des_by_ab(codebook, "tails"))
 ```
+This plot seems a lot more interesting seeing as all of the peaks are in slightly different locations, the DO, PO and the PI seem to overlap a lot but the DP and DI tails seem to have little overlap with the rest. It seems like APL could possibly be used as a variable to distinguish between aliphatic tails when paired with another variable.
 
-# Heatmap
 
+## Heatmap
+
+Here a heatmap is made to look for corrolation for
 ```{r Heatmap independent variables}
 corrolation <- nona_data[,9:14]
 #cor2 <- na.omit(cor2)
-cormat <- round(cor(corrolation),5)
-head(cormat)
+#cormat <- round(cor(corrolation),5)
+#head(cormat)
 
-melted_cormat <- melt(cor(cor2))
+melted_cormat <- melt(cor(corrolation))
 head(melted_cormat)
 
 ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile()
 ```
+This is a very interesting result. It seems like all of the variables seem to be quite heavily correlated, except for APL. It also seem like the comprehensibility is slightly less correlated then the rest of the variables. But thickness, bending, tilt and z order all seem to have a heavy correlation.
 
+# PCA
+Here we'll make a PCA plot to look for clusters.
+```{r PCA}
+library(ggfortify)
+pca_res <- prcomp(corrolation, scale. = TRUE, center = TRUE)
+print(pca_res)
 
-Research question?
+autoplot(prcomp(corrolation), data = nona_data, colour = 'sterol.type')
+```
+```{r PCA2}
+library("factoextra")
+res.pca <- prcomp(corrolation, scale = TRUE)
+fviz_eig(res.pca)
+fviz_pca_var(res.pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("orange", "white", "purple"),
+             repel = TRUE     # Avoid text overlapping
+             )
+fviz_pca_biplot(res.pca, repel = TRUE,
+                col.var = "purple", # Variables color
+                col.ind = "grey"  # Individuals color
+                )
+```
+This PCA plot confirms what we could already see in the heat map, that is that most of the variables seem to be heavily correlated, seeing as they are pointing in the same direction, except for APL and compress.
+
+## Research question
 Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given the area per lipid, the bending rigidity and the compressibility? 
