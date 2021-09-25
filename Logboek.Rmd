@@ -221,19 +221,28 @@ In plot A we can see a small cluster forming with the blue dots on the bottom, a
 
 ```{r PCA2}
 res.pca <- prcomp(corrolation, scale = TRUE)
-fviz_eig(res.pca)
-fviz_pca_var(res.pca,
-             col.var = "contrib", # Color by contributions to the PC
-             gradient.cols = c("orange", "purple"),
-             repel = TRUE     # Avoid text overlapping
-             )
-fviz_pca_biplot(res.pca, repel = FALSE,
-                col.var = "purple", # Variables color
-                col.ind = nona_data$sterol.type,  # Individuals color
-                label = FALSE,
-                addEllipses =  TRUE,
-                ellipse.type = "t"
-                )
+plot1 <- fviz_eig(res.pca)
+plot2 <- fviz_pca_var(res.pca,
+                      col.var = "contrib", # Color by contributions to the PC
+                      gradient.cols = c("orange", "purple"),
+                      repel = TRUE     # Avoid text overlapping
+                      )
+plot3 <- fviz_pca_biplot(res.pca, repel = FALSE,
+                         col.var = "purple", # Variables color
+                         col.ind = nona_data$sterol.type,  # Individuals color
+                         label = FALSE,
+                         addEllipses =  TRUE,
+                         ellipse.type = "t"
+                         )
+
+plot1
+plot2
+plot3
+#ggarrange(plot1 + theme(
+#  axis.title.y = element_text(size=7)
+#  ), plot2, plot3,
+#  labels = c("A", "B", "C"),
+#  ncol = 2, nrow = 2)
 ```
 This PCA plot confirms what we could already see in the heat map, that is that most of the variables seem to be heavily correlated, seeing as they are pointing in the same direction, except for APL and compress.
 
