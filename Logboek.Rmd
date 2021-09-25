@@ -15,7 +15,10 @@ Setup of the libraryies.
 ```{r}
 library("ggplot2")
 library("kableExtra")
+library("factoextra")
 library("dplyr")
+library(ggpubr)
+library(ggfortify)
 library(tidyr)
 library(purrr)
 library(ggcorrplot)
@@ -36,11 +39,12 @@ The data was provided by Tsjerk Wassenaar of the RuG. The dataset is not publica
 Before I start I'll read the .csv file containing the data and I'll also make a codebook of all of the variables and their descriptions.
 ```{r Data reading & structure}
 data <- read.csv("data/dataFrame_all_sims.csv", sep = ",", header=TRUE)
+data <- as_tibble(data)
 ```
 
 Here a codebook is made of all of the abbreviations in the data frame and their meaning.
 ```{r Codebook}
-colnames(data)
+#colnames(data)
 codebook <- data.frame("Abreviation" = colnames(data), "Type/Class" = sapply(data, class), 
                        "Desciption" = c("Temperature (Kelvin)", "Sterol type", 
                                         "Sterol concentration (%)", "Other (phospho)lipids in membrane (headgroup)",
@@ -50,8 +54,9 @@ codebook <- data.frame("Abreviation" = colnames(data), "Type/Class" = sapply(dat
                                         "Thickness (nm)", "Bending rigidity (kB T)", "Tilt angle (degrees)", 
                                         "Z-order", "Compressibility (cN / m)"))
 rownames(codebook) <- NULL
+codebook <- as_tibble(codebook)
 codebook
-sapply(data, typeof)
+#sapply(data, typeof)
 
 write.csv(codebook, "data/codebook.csv", row.names = FALSE)
 ```
@@ -202,24 +207,24 @@ This is a very interesting result. It seems like all of the variables seem to be
 # PCA
 Here we'll make a PCA plot to look for clusters.
 ```{r PCA}
-library(ggfortify)
 pca_res <- prcomp(corrolation, scale. = TRUE, center = TRUE)
 print(pca_res)
 
-autoplot(prcomp(corrolation), data = nona_data, colour = 'sterol.type', alpha=2/10, size = 5/10)
-autoplot(prcomp(corrolation), data = nona_data, colour = 'sterol.type', alpha=1/5, size = 1/2) + 
-  scale_x_continuous(limits=c(-0.02,0.02)) +
-  scale_y_continuous(limits=c(-0.02,0.02))
+ggarrange(autoplot(prcomp(corrolation), data = nona_data, colour = 'sterol.type', alpha=2/10, size = 5/10),
+          autoplot(prcomp(corrolation), data = nona_data, colour = 'sterol.type', alpha=1/5, size = 1/2) + 
+            scale_x_continuous(limits=c(-0.02,0.02)) +
+            scale_y_continuous(limits=c(-0.02,0.02)),
+          labels = c("A", "B"),
+          ncol = 1, nrow = 2)
 ```
-
+In plot A we can see a small cluster forming with the blue dots on the bottom, and a cluster of both erosterol and cholesterol on top. Plot B cuts off the data point on the side and zooms in on the dense cloud of dots vissable in plot A. In this plot we can't really make out much of a pattern or cluster.
 
 ```{r PCA2}
-library("factoextra")
 res.pca <- prcomp(corrolation, scale = TRUE)
 fviz_eig(res.pca)
 fviz_pca_var(res.pca,
              col.var = "contrib", # Color by contributions to the PC
-             gradient.cols = c("orange", "white", "purple"),
+             gradient.cols = c("orange", "purple"),
              repel = TRUE     # Avoid text overlapping
              )
 fviz_pca_biplot(res.pca, repel = FALSE,
