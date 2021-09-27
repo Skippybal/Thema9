@@ -502,7 +502,7 @@ ggscatter(
        shape = get_des_by_ab(codebook, "sterol.type")) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.margin = margin(t = 10, r = 10, b = 40, l = 10),
-        plot.tag.position = c(0.5, -0.1)
+        plot.tag.position = c(0.46, -0.1)
         )
 ```
 This plot shown in figure 11 still doesn't seem very promising seeing as there seem to be three clear clusters, but this seems to be more because of the large spread of the data. The clusters also seem to have nothing to do with the sterol type of the membrane.
