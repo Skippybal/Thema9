@@ -70,8 +70,22 @@ codebook <- data.frame("Abbreviation" = colnames(data), "Type" = sapply(data, ty
                                         "Area per lipid (nm^2)", 
                                         "Thickness (nm)", "Bending rigidity (kB T)",
                                         "Tilt angle (degrees)", 
-                                        "Z-order", "Compressibility (cN / m)"))
-
+                                        "Z-order", "Compressibility (cN / m)"),
+                       "Units" = c("Kelvin",
+                                   "", 
+                                   "%",
+                                   "",
+                                   "",
+                                   "", 
+                                   "", 
+                                   "",
+                                   "nm^2", 
+                                   "nm",
+                                   "kB T",
+                                   "degrees", 
+                                   "", 
+                                   "cN / m"))
+# Turn dataframe into a tibble
 codebook <- as_tibble(codebook)
 kable(codebook, caption = "Codebook") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
@@ -104,7 +118,7 @@ data.frame(variable = names(data),
   kable_styling(latex_options = c("scale_down", "hold_position"))
 
 ```
-Looking at the structure of the data in table 2, it seems like all of the columns have been read and have the right datatype.
+Looking at the structure of the data, shown in table 2, it seems like all of the columns have been read and have the right datatype.
 
 ```{r Five number summary}
 # Get the five number summary of the selected columns
@@ -120,7 +134,7 @@ rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number o
 kable(sum, caption="Five number summary") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
-Looking at the structure, shown in table 3, there doesn't seem to be immediate problem with the data, like the data being read as the wrong datatype. When looking at the five number summary there do seem to be some rows that are missing values like the APL, thickness, bending and tilt values. These rows will be omitted for plotting and other research seeing as they can't be used.
+Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as the wrong datatype. When looking at the five number summary, depicted in table 3, there do seem to be some rows that are missing values like the APL, thickness, bending and tilt values. These rows will be omitted for plotting and other research seeing as they can't be used.
 The maximum of the bending rigidity and tilt angle seem to be too high, this probably means that these are outliers seeing as the rest of the values in the summary seem to be believable. To check this we'll make a histogram of these variables.
 
 ```{r "Omit NA's"}
