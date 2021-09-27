@@ -17,6 +17,8 @@ Setup of the libraries.
 library("ggplot2")
 library("kableExtra")
 library("factoextra")
+library("cowplot")
+library("gridExtra")
 library("dplyr")
 library(ggpubr)
 library(ggfortify)
@@ -32,16 +34,16 @@ library(reshape2)
 
 
 # Introduction
-The data was provided by Tsjerk Wassenaar of the RuG. The data set is not publicly available. The data set also does not have a publication linked to it.
+The data was provided by Tsjerk Wassenaar of the RuG. The data set contains data on membrane composition and characteristics. The data set is not publicly available. The data set also does not have a publication linked to it.
 
-Seeing as there is no paper linked to the data set i can only guess using the information that i did get that the data was gathered by making a membrane using specific variables and the measuring the resulting membranes to get variables like the thickness and compressibility.
+Seeing as there is no paper linked to the data set I can only guess using the information that I did get that the data was gathered by making a membrane using specific variables and the measuring the resulting membranes to get variables like the thickness and compressibility.
 The data set contains 14 variables and 2843 different measurement. The goal is to use measurement to predict the composition of the membrane. 
-Typically you would use independent variables to predict one dependent variable. In this data set this is no the case, seeing as the variables that are given as parameters are seen as class variables, this means that these would be considered the labels. The paramaters are: Temperature, Sterol type, Sterol concentration, Other (phospho)lipids in membrane, Aliphatic tails, Saturation index, Phosphatidyl choline concentration and Ethanol concentration. So the biggest question that the EDA should anwser is which of these variables is most interesting to use as the label, or could we even predict multiple of them using the save variables.
+Typically you would use independent variables to predict one dependent variable. In this data set this is not the case, seeing as the variables that are given as parameters are seen as class variables, this means that these would be considered the labels. The parameters are: Temperature, Sterol type, Sterol concentration, Other (phospho)lipids in membrane, Aliphatic tails, Saturation index, Phosphatidyl choline concentration and Ethanol concentration. So the biggest question that the EDA should anwser is which of these variables is most interesting to use as the label, or could we even predict multiple of them using the save variables.
 
 # Data exploration
 
 ## Data reading & codebook
-To start off the data is read in using read.csv(). The data frame that this step creates is turned into a tibble and then used to create a codebook. The codebook is a csv file that contains the abbreviation, type and the description of every variable in the data set.
+To start off the data is read in using read.csv(). The data frame that is created by this step is turned into a tibble and then used to create a codebook. The codebook is a csv file that contains the abbreviation, type and the description of every variable in the data set.
 ```{r Data reading & structure}
 # Read the data and transform it to a tibble
 data <- read.csv("data/dataFrame_all_sims.csv", sep = ",", header=TRUE, stringsAsFactors=FALSE)
@@ -107,23 +109,27 @@ Looking at the structure of the data, it seems like all of the columns have been
 sum <- summary(data[c("temperature","sterol.conc","satur.index",
                       "PC.conc","ethanol.conc","APL", "thickness", "bending",
                       "tilt", "zorder","compress")])
+
 sum <- sub(".*:", "", sum)
+sum[is.na(sum)] <- 0
 rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number of NA's")
 
+# Print five number summary using kable
 kable(sum, caption="Five number summary") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as a wrong type of data. When looking at the five number summary there do seem to be some rows that are missing values like the APL, thickness, bending and tilt values. These rows will be omitted for plotting and other research seeing as they can't be used.
-The maximum of the bending rigidity and tilt angle seem to be to high, this probably means that these are outliers seeing as the rest of the values in the summary seem to be believable. To check this we'll make a histogram of these variables.
+The maximum of the bending rigidity and tilt angle seem to be too high, this probably means that these are outliers seeing as the rest of the values in the summary seem to be believable. To check this we'll make a histogram of these variables.
 
-```{r "Omit Na's"}
+```{r "Omit NA's"}
+# Remove NA's
 row.has.na <- apply(data, 1, function(x){any(is.na(x))})
 nona_data <- na.omit(data)
 row.has.na.2 <- apply(nona_data, 1, function(x){any(is.na(x))})
 paste("Number of NA's before: ", sum(row.has.na),
 ", Number of NA's after:", sum(row.has.na.2), sep="")
 ```
-`r row.has.na - row.has.na.2` lines with NA's where omitted from the data set.
+`r sum(row.has.na) - sum(row.has.na.2)` lines with NA's where omitted from the data set.
 
 
 ```{r Histograms}
@@ -203,7 +209,7 @@ pairs(nona_data,
 ```
 This code is for a paired scatter plot. The eval is currently set to false seeing as there are a lot of variables that are compared to each other in this data set. Running this code will result in a big plot that isn't very well interpret able in a pdf file.
 
-First we'll plot the bending area per lipid against the rigidity of the membrane, coloring the points based on the sterol type, to look for any kind of clustering or correlation. To make is even cleared we'll also make a second plot with a loess regression. The reason we use loess regression instead of linear regression is because loess will show us a better trend line, seeing as it isn't trying to fit a straight line like linear regression. 
+First we'll plot the bending area per lipid against the rigidity of the membrane, coloring the points based on the sterol type, to look for any kind of clustering or correlation. To make it even cleared we'll also make a second plot with a loess regression. The reason we use loess regression instead of linear regression is because loess will show us a better trend line, seeing as it isn't trying to fit a straight line like linear regression. 
 
 ```{r APL Bending plot}
 #Plot APL against bending rigidity
@@ -212,10 +218,11 @@ chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) +
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending")) + 
   theme(axis.title.y = element_text(size=8)) + 
-  ggtitle("APL against bending rigidity scatter plot")
+  ggtitle("APL against bending rigidity scatter plot") + 
+  labs(colour = get_des_by_ab(codebook, "sterol.type"))
 
-ggarrange(chart + labs(colour = get_des_by_ab(codebook, "sterol.type")),
-          chart + labs(colour = get_des_by_ab(codebook, "sterol.type")) + 
+ggarrange(chart,
+          chart + 
             geom_smooth(method = "loess") + ggtitle(""),
           labels = c("A", "B"),
           ncol = 1, nrow = 2)
@@ -229,13 +236,14 @@ chart <- ggplot(nona_data, aes(APL, log10(bending + 1), colour = factor(sterol.t
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(paste( "Log10 ", get_des_by_ab(codebook, "bending"))) + 
   geom_smooth(method = "loess") + 
-  ggtitle("APL against log10 bending rigidity scatter plot")
+  ggtitle("APL against log10 bending rigidity scatter plot") + 
+  labs(colour = get_des_by_ab(codebook, "sterol.type"))
 chart
 ```
 Looking at this plot we can see that there indeed seem to be an almost linear correlation between the log10 transformed bending rigidity and the area per lipid. There does still seem to be a sleight curve in all of the trend lines when the area per lipid increases.
 
 Here I'll plot the temperature against the bending rigidity while coloring based on saturation index, and deciding the shape based on the sterol type.
-```{r}
+```{r Temp x bening regidity}
 rects <- data.frame(xstart = seq(0,600,300), xend = seq(300,900,300), col = letters[1:3])
 
 chart <- ggplot(nona_data, aes(temperature, bending, colour = factor(satur.index),
@@ -245,7 +253,9 @@ chart <- ggplot(nona_data, aes(temperature, bending, colour = factor(satur.index
   ylab(get_des_by_ab(codebook, "bending"))  + 
   ggtitle("Temperature against bending regidity, 
           coloured by saturation index, shaped on sterol type") + 
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  labs(colour = get_des_by_ab(codebook, "sterol.type"),
+       shape = get_des_by_ab(codebook, "satur.index"))
 
   
 chart + 
@@ -258,7 +268,7 @@ chart +
 ```
 When looking at this plot there seem to be a clear separation between a saturation index of 0 while the rest of the values seem to be clustered quite close together. There does seem to be a small separation between 0.5, 1 and 2 values. An interesting observation is that there don't seem to be any data point with a saturation index of more than 0.5 in the 328 kelvin group (the purple box).
 
-Here the APL is plot against the bending rigidity again, but here the colour is decided based on the saturation index abd the shape on the sterol type.
+Here the APL is plot against the bending rigidity again, but here the colour is decided based on the saturation index and the shape on the sterol type.
 ```{r}
 chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
   geom_jitter(alpha=1, size=0.5) +  
@@ -270,6 +280,38 @@ chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shap
 chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_by_ab(codebook, "sterol.type"))
 ```
 In the plot we can see the same kind of correlation as before, but now we can see that there also seem to be some kind of clustering based on the saturation index.
+
+Here is a plot that shows the Compressibility plotted against the bending rigidity.
+```{r bending compress plot, warning=FALSE}
+chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
+  geom_point(alpha=2/10, size=0.5) +
+  xlab(get_des_by_ab(codebook, "compress")) +
+  ylab(get_des_by_ab(codebook, "bending")) +
+  theme(axis.title.y = element_text(size=8)) +
+  ggtitle("Compressibility against bending rigidity,
+          coloured on sterol type") +
+  labs(colour = get_des_by_ab(codebook, "sterol.type"))  +
+  theme(plot.title = element_text(size=10))
+
+chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
+  geom_point(alpha=2/10, size=0.5) +
+  xlab(get_des_by_ab(codebook, "compress")) +
+  ylab(get_des_by_ab(codebook, "bending")) +
+  theme(axis.title.y = element_text(size=8)) +
+  ggtitle("Compressibility against bending rigidity,
+          coloured on sterol type, zoomed in") +
+  labs(colour = get_des_by_ab(codebook, "sterol.type")) +
+  scale_x_continuous(limits=c(0,120)) +
+  scale_y_continuous(limits=c(0, 45))  +
+  theme(plot.title = element_text(size=10))
+
+ggarrange(chart,
+          chart2,
+          labels = c("A", "B"),
+          ncol = 1, nrow = 2)
+```
+In plot A we can't really make out much of a pattern in the dense clout to the left, but when looking at the rest of the data points there does seem to be some grouping based on whether or not no sterol or a sterol is present. When zooming in in plot B we can now see the same kind of grouping happen again based on either a sterol present or no sterol present.
+
 
 
 ## Heatmap
@@ -288,34 +330,44 @@ ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) +
   geom_tile() + 
   ggtitle("Heatmap of the variables")
 ```
-This is a very interesting result. It seems like all of the variables seem to be quite heavily correlated, except for APL. It also seem like the comprehensibility is slightly less correlated then the rest of the variables. But thickness, bending, tilt and z order all seem to have a heavy correlation.
+This is a very interesting result. It seems like all of the variables seem to be quite heavily correlated, except for APL, which is negatively corrolated. It also seem like the comprehensibility is slightly less correlated then the rest of the variables. But thickness, bending, tilt and z order all seem to have a heavy correlation.
 
 # PCA
 Here we'll make a PCA plot to look for possible clusters.
 ```{r PCA, warning=FALSE}
+# PCA plot results
 pca_res <- prcomp(corrolation, scale. = TRUE, center = TRUE)
-#print(pca_res)
+print(pca_res)
 
-ggarrange(autoplot(prcomp(corrolation), data = nona_data, colour = 'sterol.type', alpha=2/10, size = 5/10) + 
-            ggtitle("PCA plot"),
-          autoplot(prcomp(corrolation), data = nona_data, colour = 'sterol.type', alpha=1/5, size = 1/2)+ 
+# Create PCA plot
+ggarrange(autoplot(pca_res, data = nona_data,
+                   colour = 'sterol.type', alpha=2/10, 
+                   size = 5/10) + 
+            ggtitle("PCA plot") +
+            labs(colour = get_des_by_ab(codebook, "sterol.type")),
+          autoplot(pca_res, data = nona_data, 
+                   colour = 'sterol.type', alpha=1/5, 
+                   size = 1/2) + 
             ggtitle("PCA plot zoomed in") + 
-            scale_x_continuous(limits=c(-0.02,0.02)) +
-            scale_y_continuous(limits=c(-0.02,0.02)),
+            labs(colour = get_des_by_ab(codebook, "sterol.type")) +
+            scale_x_continuous(limits=c(-0.03,0.025)) +
+            scale_y_continuous(limits=c(-0.03,0.04)),
           labels = c("A", "B"),
           ncol = 1, nrow = 2)
 ```
-In plot A we can see a small cluster forming with the blue dots on the bottom, and a cluster of both ergosterol and cholesterol on top. Plot B cuts off the data point on the side and zooms in on the dense cloud of dots visible in plot A, a total of 274 aren't visible because of this. In this plot we can't really make out much of a pattern or cluster.
+In plot A we can hardly see any clusters at all, it does seem to have a dense cloud to the right. Plot B cuts off the data point on the side and zooms in on the dense cloud of dots visible in plot A, a total of 271 dots aren't visible because of this. In this plot we can't really make out much of a pattern or cluster. It does, however, seem like no sterol cluster is sleightly seperated from the other sterol types.
 
 Here is another way to make a PCA plot that is a bit more advanced seeing as it will also give us a way to identify correlation based on variables in the clustering.
 ```{r PCA2}
+# Create PCA plot
 res.pca <- prcomp(corrolation, scale = TRUE)
-plot1 <- fviz_eig(res.pca)
+plot1 <- fviz_eig(res.pca) + 
+  theme(axis.title.y = element_text(size=7))
 plot2 <- fviz_pca_var(res.pca,
                       col.var = "contrib", # Color by contributions to the PC
                       gradient.cols = c("orange", "purple"),
                       repel = TRUE     # Avoid text overlapping
-                      )
+                      ) 
 plot3 <- fviz_pca_biplot(res.pca, repel = FALSE,
                          col.var = "purple", # Variables color
                          col.ind = nona_data$sterol.type,  # Individuals color
@@ -324,13 +376,20 @@ plot3 <- fviz_pca_biplot(res.pca, repel = FALSE,
                          ellipse.type = "t"
                          )
 
-ggarrange(plot1 + theme(
- axis.title.y = element_text(size=7)
- ), plot2, plot3,
- labels = c("A", "B", "C"),
- ncol = 2, nrow = 2)
+# ggarrange(plot1, plot2, plot3,
+#  labels = c("A", "B", "C"),
+#  ncol = 2, nrow = 2)
+plot <- arrangeGrob(plot1,  plot2,
+                    plot3,
+                    ncol = 2, nrow = 2, 
+                    layout_matrix = rbind(c(1,2), c(3,3)))
+
+plot <- as_ggplot(plot) +
+  draw_plot_label(label = c("A", "B", "C"), size = 15,
+                  x = c(0, 0.5, 0), y = c(1, 1, 0.5))
+plot
 ```
-This PCA plot confirms what we could already see in the heat map, that is that most of the variables seem to be heavily correlated, seeing as they are pointing in the same direction, except for APL and compress. We can also see that thickness and z order are correlated just like tilt and bending. The PCA plot also still looks the same, only now it has as ellipse for clusters that was calculated using a t test. The ellipses all seem to overlap so there isn't much clustering. 
+This PCA plot confirms what we could already see in the heat map, that is that most of the variables seem to be heavily correlated, seeing as they are pointing in the same direction, except for APL and compress. We can also see that thickness and z order are correlated just like tilt and bending. The PCA plot also still looks the same, only now it has as ellipse for clusters that was calculated using a t test. The ellipses all seem to overlap so there doesn't seem to be much clustering. 
 
 ## Research question
 Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given the area per lipid, the bending rigidity and the compressibility? 
