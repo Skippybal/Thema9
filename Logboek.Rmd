@@ -460,7 +460,7 @@ title <- expression(atop(bold("Figure 10:"),
 annotate_figure(plot,
                 top=text_grob(title))
 ```
-The PCA plot, C, shown in figure 10 confirms what we could already see in the heat map, that is that most of the variables seem to be heavily correlated, seeing as they are pointing in the same direction, except for APL and compress. We can also see that thickness and z order are correlated just like tilt and bending. The PCA plot also still looks the same, only now it has as ellipse for clusters that was calculated using a t test. The ellipses all seem to overlap so there doesn't seem to be much clustering. 
+The PCA plots, B and C, shown in figure 10 confirms what we could already see in the heat map, that is that most of the variables seem to be heavily correlated, seeing as they are pointing in the same direction, except for APL and compress. We can also see that thickness and z order are correlated just like tilt and bending. The PCA plot also still looks the same, only now it has as ellipse for clusters that was calculated using a t test. The ellipses all seem to overlap so there doesn't seem to be much clustering. 
 
 
 # K means 
@@ -507,5 +507,5 @@ ggscatter(
 ```
 This plot shown in figure 11 still doesn't seem very promising seeing as there seem to be three clear clusters, but this seems to be more because of the large spread of the data. The clusters also seem to have nothing to do with the sterol type of the membrane.
 
-## Research question
+# Research question
 Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given the area per lipid, the bending rigidity and the compressibility? 
