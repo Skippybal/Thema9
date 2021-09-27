@@ -498,7 +498,7 @@ ggscatter(
   ylab = paste0("Dim 2 (", variance.percent[2], "% )" )
 ) +
   stat_mean(aes(color = cluster), size = 4) +
-  labs(tag = "Figure 11: PCA based on K-means clustering",
+  labs(tag = "Figure 11: PCA plot based on K-means clustering",
        shape = get_des_by_ab(codebook, "sterol.type")) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.margin = margin(t = 10, r = 10, b = 40, l = 10),
