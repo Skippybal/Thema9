@@ -27,6 +27,8 @@ library(tidyr)
 library(purrr)
 library(ggcorrplot)
 library(reshape2)
+library(e1071) 
+library(Hmisc)
 ```
 
 <!-- * Copyright (c) 2018 Kasper Notebomer. -->
@@ -39,7 +41,7 @@ The data was provided by Tsjerk Wassenaar of the RuG. The data set contains data
 
 Seeing as there is no paper linked to the data set I can only guess using the information that I did get that the data was gathered by making a membrane using specific variables and the measuring the resulting membranes to get variables like the thickness and compressibility.
 The data set contains 14 variables and 2843 different measurement. The goal is to use measurement to predict the composition of the membrane. 
-Typically you would use independent variables to predict one dependent variable. In this data set this doesn't seem to be the case, seeing as the variables that are given as parameters are seen as class variables, this means that these would be considered the labels. The parameters are: Temperature, Sterol type, Sterol concentration, Other (phospho)lipids in membrane, Aliphatic tails, Saturation index, Phosphatidyl choline concentration and Ethanol concentration. So the biggest question that the EDA should anwser is which of these variables is most interesting to use as the label, or could we even predict multiple of them using the save variables.
+Typically you would use independent variables to predict one dependent variable. In this data set this doesn't seem to be the case, seeing as the variables that are given as parameters are seen as class variables, this means that these would be considered the labels. The parameters are: Temperature, Sterol type, Sterol concentration, Other (phospho)lipids in membrane, Aliphatic tails, Saturation index, Phosphatidyl choline concentration and Ethanol concentration. So the biggest question that the EDA should answer is which of these variables is most interesting to use as the label, or could we even predict multiple of them using the given variables.
 
 # Data exploration
 
@@ -508,4 +510,87 @@ ggscatter(
 This plot shown in figure 11 still doesn't seem very promising seeing as there seem to be three clear clusters, but this seems to be more because of the large spread of the data. The clusters also seem to have nothing to do with the sterol type of the membrane.
 
 # Research question
-Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given the area per lipid, the bending rigidity and the compressibility? 
+Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given the area per lipid, the bending rigidity and the compressibility?
+
+# Data Cleaning
+Here is a quick code snippet to show us the skewdness of the data. This will be usefull when desideng whether or not to use standardization or normalization on the columns.
+```{r Skew}
+apply(data[c("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress")], 2, skewness, na.rm =TRUE)
+```
+A lot of the data seems to be extremely skewed. Lets plot it in histograms to get a better look.
+```{r SkewHist}
+hist.data.frame(data[c("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress")])
+```
+
+The data seems to be skewed a lot in almost every column. If we were planning on using a machine learning algorithms that are based on the assumption that the data has a Gaussian distribution we would need to use normalization (transformation) to force the data in to such a distribution. To achieve this we could use a log or cube root transformation. We probably won't be using any algorithms that assume that our distribution is Gaussian, which is why we won't make any transformations at first.
+Seeing as most of the distributions aren't Gaussian we should use min_max normalization(scaling). This does lessen/supress the impact of outliers. We could also use z score normalization (standardization), but this assumes that our distributions are Gaussian, which they are not. 
+
+```{r Scaling}
+scale_min_max <- function(x) (x - min(x)) / (max(x) - min(x))
+nona_copy <- nona_data[c("APL", "thickness", "bending",
+                                                "tilt", "zorder","compress")]
+
+scaled_data <- as.data.frame(lapply(nona_copy, FUN=scale_min_max))
+hist.data.frame(scaled_data)
+
+apply(scaled_data, 2, skewness, na.rm =TRUE)
+```
+After min max scaling we can see that the distributions stay the same but scale on all of the variables now ranges from zero to one.
+In the future we could always try different forms of normalization and transformation to see whether or not our model improves.
+Now the only thing left to do is add the sterol type label.
+```{r Label}
+scaled_data$sterol.type <- nona_data$sterol.type
+scaled_data
+```
+Only the sterol type was added as the label, seeing as the other variables where considered labels by the assignment, and we're interested in the sterol type in the membrane. Looking at the PCA plot and the heatmap it would seem like some of the variables are heavily correlated. However, it was decided not to remove any of the variables as of this time.
+
+Here is a PCA plot that is made using the data after applying log and cube transformations to reduce skewdness.
+```{r PCA2}
+# Create PCA plot
+new_help <- log10(correlation[2:6])
+new_help$APL <- corrolation$APL^2
+apply(new_help, 2, skewness, na.rm =TRUE)
+res.pca <- prcomp(new_help, scale = TRUE)
+plot1 <- fviz_eig(res.pca) + 
+  theme(axis.title.y = element_text(size=6))
+plot2 <- fviz_pca_var(res.pca,
+                      col.var = "contrib", # Colour by contributions to the PC
+                      gradient.cols = c("orange", "purple"),
+                      repel = TRUE     # Avoid text overlapping
+                      ) 
+plot3 <- fviz_pca_biplot(res.pca, repel = FALSE,
+                         col.var = "purple", # Variables colour
+                         col.ind = nona_data$sterol.type,  # Individuals colour
+                         label = FALSE,
+                         addEllipses =  TRUE,
+                         ellipse.type = "t"
+                         )
+# Arrange plots
+plot <- arrangeGrob(plot1,  plot2,
+                    plot3,
+                    ncol = 2, nrow = 2, 
+                    layout_matrix = rbind(c(1,2), c(3,3)))
+
+plot <- as_ggplot(plot) +
+  draw_plot_label(label = c("A", "B", "C"), size = 15,
+                  x = c(0, 0.5, 0), y = c(1, 1, 0.5))
+title <- expression(atop(bold("Figure 14:"), 
+                         scriptstyle("PCA results after transformation")))
+annotate_figure(plot,
+                top=text_grob(title))
+```
+As we can see in figure 14, reducing the skewness had absolutely no effect, besides increasing the variance expained by the first dimension and flipping the PCA upside down.
+
+
+```{r}
+kable(head(data), caption="Original data") %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+
+kable(head(scaled_data), caption="Cleaned data") %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
