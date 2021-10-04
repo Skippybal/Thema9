@@ -21,6 +21,7 @@ library("factoextra")
 library("cowplot")
 library("gridExtra")
 library("dplyr")
+library("scales")
 library(ggpubr)
 library(ggfortify)
 library(tidyr)
@@ -252,7 +253,11 @@ chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) +
   ylab(get_des_by_ab(codebook, "bending")) + 
   theme(axis.title.y = element_text(size=8)) + 
   ggtitle("APL against bending rigidity scatter plot") + 
-  labs(colour = get_des_by_ab(codebook, "sterol.type"))
+  scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
+                     labels = c("Cholesterol", 
+                                "Ergosterol", 
+                                "No sterol"),                        
+                     values = hue_pal()(3))
 
 plots <- ggarrange(chart,
                    chart + 
@@ -278,7 +283,11 @@ chart <- ggplot(nona_data, aes(APL, log10(bending + 1), colour = factor(sterol.t
   ylab(paste( "Log10 ", get_des_by_ab(codebook, "bending"))) + 
   geom_smooth(method = "loess") + 
   ggtitle("APL against log10 bending rigidity scatter plot") + 
-  labs(colour = get_des_by_ab(codebook, "sterol.type"))
+  scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
+                     labels = c("Cholesterol", 
+                                "Ergosterol", 
+                                "No sterol"),                        
+                     values = hue_pal()(3))
 
 # Plot the Plot and add a tag
 chart + labs(tag = "Figure 4: APL against log transformed bending regidity") +
@@ -351,7 +360,11 @@ chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )
   theme(axis.title.y = element_text(size=8)) +
   ggtitle("Compressibility against bending rigidity,
           coloured on sterol type") +
-  labs(colour = get_des_by_ab(codebook, "sterol.type"))  +
+  scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
+                     labels = c("Cholesterol", 
+                                "Ergosterol", 
+                                "No sterol"),                        
+                     values = hue_pal()(3)) +
   theme(plot.title = element_text(size=10))
 
 chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
@@ -361,7 +374,11 @@ chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) 
   theme(axis.title.y = element_text(size=8)) +
   ggtitle("Compressibility against bending rigidity,
           coloured on sterol type, zoomed in") +
-  labs(colour = get_des_by_ab(codebook, "sterol.type")) +
+  scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
+                     labels = c("Cholesterol", 
+                                "Ergosterol", 
+                                "No sterol"),                        
+                     values = hue_pal()(3)) +
   scale_x_continuous(limits=c(0,120)) +
   scale_y_continuous(limits=c(0, 45))  +
   theme(plot.title = element_text(size=10))
@@ -412,12 +429,20 @@ plots <- ggarrange(autoplot(pca_res, data = nona_data,
                             colour = 'sterol.type', alpha=2/10, 
                             size = 5/10) + 
                      ggtitle("PCA plot") +
-                     labs(colour = get_des_by_ab(codebook, "sterol.type")),
+                     scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
+                                        labels = c("Cholesterol", 
+                                                   "Ergosterol", 
+                                                   "No sterol"),                        
+                                        values = hue_pal()(3)),
                    autoplot(pca_res, data = nona_data, 
                             colour = 'sterol.type', alpha=1/5, 
                             size = 1/2) + 
                      ggtitle("PCA plot zoomed in") + 
-                     labs(colour = get_des_by_ab(codebook, "sterol.type")) +
+                     scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
+                                        labels = c("Cholesterol", 
+                                                   "Ergosterol", 
+                                                   "No sterol"),                        
+                                        values = hue_pal()(3)) +
                      scale_x_continuous(limits=c(-0.03,0.025)) +
                      scale_y_continuous(limits=c(-0.03,0.04)),
                    labels = c("A", "B"),
@@ -513,21 +538,22 @@ This plot shown in figure 11 still doesn't seem very promising seeing as there s
 Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given the area per lipid, the bending rigidity and the compressibility?
 
 # Data Cleaning
-Here is a quick code snippet to show us the skewdness of the data. This will be usefull when desideng whether or not to use standardization or normalization on the columns.
+Here is a quick code snippet to show us the skewness of the data. This will be useful when deciding whether or not to use standardization or normalization on the columns.
 ```{r Skew}
-apply(data[c("temperature","sterol.conc","satur.index",
+apply(nona_data[c("temperature","sterol.conc","satur.index",
                       "PC.conc","ethanol.conc","APL", "thickness", "bending",
                       "tilt", "zorder","compress")], 2, skewness, na.rm =TRUE)
 ```
 A lot of the data seems to be extremely skewed. Lets plot it in histograms to get a better look.
 ```{r SkewHist}
-hist.data.frame(data[c("temperature","sterol.conc","satur.index",
-                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
-                      "tilt", "zorder","compress")])
+hist.data.frame(nona_data[c("temperature","sterol.conc","satur.index",
+                            "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                            "tilt", "zorder","compress")])
 ```
 
 The data seems to be skewed a lot in almost every column. If we were planning on using a machine learning algorithms that are based on the assumption that the data has a Gaussian distribution we would need to use normalization (transformation) to force the data in to such a distribution. To achieve this we could use a log or cube root transformation. We probably won't be using any algorithms that assume that our distribution is Gaussian, which is why we won't make any transformations at first.
-Seeing as most of the distributions aren't Gaussian we should use min_max normalization(scaling). This does lessen/supress the impact of outliers. We could also use z score normalization (standardization), but this assumes that our distributions are Gaussian, which they are not. 
+Distributions like bending, tilt and compress have very long tails due to outliers. These could be log transformed. However they do not follow a power law distribution (they aren't fat tailed, the tail is just long), and values do not span across multiple orders of magnitude. This is why they won't be log transformed.
+Seeing as most of the distributions aren't Gaussian we should use min_max normalization(scaling). This does lessen/suppress the impact of outliers, it also isn't as effective with outliers. We could also use z score normalization (standardization), but this assumes that our distributions are Gaussian, which they are not. It could still be used. However, due to the heavy skew and the high amount of outliers in some column, the scale probably won't be balanced. We could also look at box cox transformation, but I wasn't taught this method, so I'm not confident about using is. The reason we use normalization is because we might want to use and algorithm like k nearest neighbor(KNN), which is an algorithm that is very sensitive to data scale.
 
 ```{r Scaling}
 scale_min_max <- function(x) (x - min(x)) / (max(x) - min(x))
@@ -537,6 +563,9 @@ nona_copy <- nona_data[c("APL", "thickness", "bending",
 scaled_data <- as.data.frame(lapply(nona_copy, FUN=scale_min_max))
 hist.data.frame(scaled_data)
 
+# scaled_data <- as.data.frame(lapply(nona_copy, FUN=scale))
+# hist.data.frame(scaled_data)
+
 apply(scaled_data, 2, skewness, na.rm =TRUE)
 ```
 After min max scaling we can see that the distributions stay the same but scale on all of the variables now ranges from zero to one.
@@ -544,15 +573,16 @@ In the future we could always try different forms of normalization and transform
 Now the only thing left to do is add the sterol type label.
 ```{r Label}
 scaled_data$sterol.type <- nona_data$sterol.type
-scaled_data
+kable(head(scaled_data), caption="Cleaned data") %>%
+  kable_styling(latex_options = c("hold_position"), full_width = TRUE)
 ```
 Only the sterol type was added as the label, seeing as the other variables where considered labels by the assignment, and we're interested in the sterol type in the membrane. Looking at the PCA plot and the heatmap it would seem like some of the variables are heavily correlated. However, it was decided not to remove any of the variables as of this time.
 
-Here is a PCA plot that is made using the data after applying log and cube transformations to reduce skewdness.
-```{r PCA2}
+Here is a PCA plot that is made using the data after applying log and cube transformations to reduce skewness.
+```{r PCA3}
 # Create PCA plot
 new_help <- log10(correlation[2:6])
-new_help$APL <- corrolation$APL^2
+new_help$APL <- correlation$APL^2
 apply(new_help, 2, skewness, na.rm =TRUE)
 res.pca <- prcomp(new_help, scale = TRUE)
 plot1 <- fviz_eig(res.pca) + 
@@ -594,3 +624,6 @@ kable(head(scaled_data), caption="Cleaned data") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
+# EDA Discussion
+I need to make this very clear.
+The EDA was made with a specific question in mind. This probably exposed the exploration steps to an subconscious bias when making plots and exploring relations between variables.
