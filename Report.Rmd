@@ -107,7 +107,7 @@ kable(t(results), caption="Skew in numeric columns") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
-Figure 0 shows that there are indeed a lot of outliers to be found in the dataset, especially in the bending rigidity, compressibility and tilt ange columns. Outliers are shown as black dots in the plot. Some variables also have very clean distributions without whiskers. This is mostly because some variables are numerical but only contain a few different levels because of the experiment that they where gathered from.
+Figure 1 shows that there are indeed a lot of outliers to be found in the dataset, especially in the bending rigidity, compressibility and tilt ange columns. Outliers are shown as black dots in the plot. Some variables also have very clean distributions without whiskers. This is mostly because some variables are numerical but only contain a few different levels because of the experiment that they where gathered from.
 
 Any type of normalization or transformation was dealt with in the data cleaning. The NA's that are present were also be removed in the data cleaning.
 
@@ -122,12 +122,12 @@ nona_data %>%
                       "tilt", "zorder","compress"), names_to = "Variable", values_to = "Value") %>%
   ggplot(aes(x = Variable, y = Value)) +
   geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  ggtitle("Figure 0: Histogram of the variables")
+  ggtitle("Figure 1: Histogram of the variables")
 ```
 
-The results of plotting some variables and coloring them based on certain class variables can be seen in figure 1. These density plots are made to look whether or not it might by possible to distinguish between class variables based on one specific variable.
+The results of plotting some variables and coloring them based on certain class variables can be seen in figure 2. These density plots are made to look whether or not it might by possible to distinguish between class variables based on one specific variable.
 
-Plot A in figure 1 show that there is basically no distinction between cholesterol and ergosterol based on the bending rigidity. However, distinguishing between no sterol or a sterol does seem to be possible based on the bending rigidity seeing as the peaks of these classes only overlaps a small bit. There does seem to be an odd peak in the no sterol class at around 50 kB/t bending rigidity.
+Plot A in figure 2 show that there is basically no distinction between cholesterol and ergosterol based on the bending rigidity. However, distinguishing between no sterol or a sterol does seem to be possible based on the bending rigidity seeing as the peaks of these classes only overlaps a small bit. There does seem to be an odd peak in the no sterol class at around 50 kB/t bending rigidity.
 
 In plot B it looks like there is no way of distinguishing different types of sterol based on the area per lipid, seeing as the peaks are basically in the same place. But just to be certain we'll still plot in against some other variables to make sure, seeing as it might be a very useful variable when paired with something like bending rigidity.
 The results depicted in plot C also don't look very promising seeing as every peak is around the same place again.
@@ -168,7 +168,7 @@ p4 <- ggplot(nona_data, aes(x=APL, colour = factor(tails))) +
 plots <- ggarrange(p, p2, p3, p4,
                    labels = c("A", "B", "C", "D"),
                    ncol = 2, nrow = 2)
-title <- expression(atop(bold("Figure 1:"), 
+title <- expression(atop(bold("Figure 2:"), 
                          scriptstyle(paste("Density plots of multiple",
                                            " variables coloured on membrane components"))))
 annotate_figure(plots,
@@ -195,7 +195,7 @@ plots <- ggarrange(chart,
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2)
 
-title <- expression(atop(bold("Figure 2:"), 
+title <- expression(atop(bold("Figure 3:"), 
                          scriptstyle(paste("Relation between APL and bending ",
                                            "rigidity of three different sterol ",
                                            "types, with and without loess regression line"))))
@@ -204,10 +204,10 @@ annotate_figure(plots,
                 top=text_grob(title))
 ```
 
-An interesting correlation that was found in the data exploration is shown in figure 2. It shows that there is an inverse logarithmic correlation between the area per lipid of a membrane and the bending rigidity. An even more interesting observation is the fact that, when colored on sterol type, it shows that there is a big difference between the no sterol group and the other two groups. This means that this ratio could be very important in the prediction of sterol type based on the membrane characteristics. It does however seem like these variables aren't useful when it comes to discerning between ergosterol and cholesterol.
+An interesting correlation that was found in the data exploration is shown in figure 3. It shows that there is an inverse logarithmic correlation between the area per lipid of a membrane and the bending rigidity. An even more interesting observation is the fact that, when colored on sterol type, it shows that there is a big difference between the no sterol group and the other two groups. This means that this ratio could be very important in the prediction of sterol type based on the membrane characteristics. It does however seem like these variables aren't useful when it comes to discerning between ergosterol and cholesterol.
 
-The results of plotting the compressibility of the membrane against the bending rigidity can be found in figure 3. 
-In plot A of figure 3 we can't really make out much of a pattern in the dense clout to the left, but when looking at the rest of the data points there does seem to be some grouping based on whether or not no sterol or a sterol is present. When zooming in in plot B it shows the same kind of grouping happen again based on whether there is a sterol present or not. Something else that figure 3 shows it that a log transformation on the compressibility variable might be in order seeing as there are a lot of point in the magnitude of tens but also a lot in the hundreds.
+The results of plotting the compressibility of the membrane against the bending rigidity can be found in figure 4. 
+In plot A of figure 4 we can't really make out much of a pattern in the dense clout to the left, but when looking at the rest of the data points there does seem to be some grouping based on whether or not no sterol or a sterol is present. When zooming in in plot B it shows the same kind of grouping happen again based on whether there is a sterol present or not. Something else that figure 3 shows it that a log transformation on the compressibility variable might be in order seeing as there are a lot of point in the magnitude of tens but also a lot in the hundreds.
 
 ```{r bending compress plot, warning=FALSE, echo=FALSE}
 # Create plot
@@ -247,7 +247,7 @@ plots <- ggarrange(chart,
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2) 
 
-title <- expression(atop(bold("Figure 3:"), 
+title <- expression(atop(bold("Figure 4:"), 
                          scriptstyle(paste("Relation between compressibility and bending ",
                                            "rigidity of three different sterol ",
                                            "types, full and zoomed"))))
@@ -255,9 +255,9 @@ annotate_figure(plots,
                 top=text_grob(title))
 ```
 
-In figure 4 the area per lipid is again plotted against the bending rigidity, only this time, the plot is colored based on the saturation index.
+In figure 5 the area per lipid is again plotted against the bending rigidity, only this time, the plot is colored based on the saturation index.
 
-The results shown in figure 4 show an interesting pattern. It seems that a specific saturation index is only found in membranes within a specific range of area per lipid and bending rigidity. This is shown by the fact that there seem to be little clusters of color that have formed in the graph. A saturation index of zero and two seem to be the most well defined, seeing as these clusters are basically separate from the other saturation indexes. The saturation indexes of zero point five and one on the other hand seem to have a lot of overlap between them. All of this means that area per lipid to bending rigidity ratio could also be promising in classifying the saturation index of a membrane.
+The results shown in figure 5 show an interesting pattern. It seems that a specific saturation index is only found in membranes within a specific range of area per lipid and bending rigidity. This is shown by the fact that there seem to be little clusters of color that have formed in the graph. A saturation index of zero and two seem to be the most well defined, seeing as these clusters are basically separate from the other saturation indexes. The saturation indexes of zero point five and one on the other hand seem to have a lot of overlap between them. All of this means that area per lipid to bending rigidity ratio could also be promising in classifying the saturation index of a membrane.
 
 
 ```{r APl against bending saturation, echo=FALSE}
@@ -276,7 +276,7 @@ plots <- ggarrange(chart,
                    labels = c("A"),
                    ncol = 1) 
 
-title <- expression(atop(bold("Figure 4:"), 
+title <- expression(atop(bold("Figure 5:"), 
                          scriptstyle(paste("Relation between APL and bending ",
                                            "rigidity of three different sterol ",
                                            "types with different saturation levels"))))
@@ -284,9 +284,9 @@ annotate_figure(plots,
                 top=text_grob(title))
 ```
 
-To look for correlation between the variables and clustering a PCA plot was made. This plot is shown in figure 5.
+To look for correlation between the variables and clustering a PCA plot was made. This plot is shown in figure 6.
 
-Plot A in figure 5 shows something that is quite strange. It states that over 80% of the variance can be explained by the first principle component, this is quite odd. Plot B shows that some of the variables seem to be highly correlated like z order and thickness just like tilt angle and bending rigidity seeing as their arrows are pointing in the same direction. Area per lipid(APL) on the other hand seems to be negatively correlated to z order and thickness.
+Plot A in figure 6 shows something that is quite strange. It states that over 80% of the variance can be explained by the first principle component, this is quite odd. Plot B shows that some of the variables seem to be highly correlated like z order and thickness just like tilt angle and bending rigidity seeing as their arrows are pointing in the same direction. Area per lipid(APL) on the other hand seems to be negatively correlated to z order and thickness.
 When looking at plot C there doesn't seem to be any obvious form of clustering, if any, for that matter.
 
 All of the results from the data exploration led to the following research question: Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given certain measurements like the bending rigidity, the are per lipid and the compressibility?
@@ -317,7 +317,7 @@ plot <- arrangeGrob(plot1,  plot2,
 plot <- as_ggplot(plot) +
   draw_plot_label(label = c("A", "B", "C"), size = 15,
                   x = c(0, 0.5, 0), y = c(1, 1, 0.5))
-title <- expression(atop(bold("Figure 5:"), 
+title <- expression(atop(bold("Figure 6:"), 
                          scriptstyle("PCA results using fviz_eig")))
 annotate_figure(plot,
                 top=text_grob(title))
@@ -368,7 +368,7 @@ In testing, even after taking this into account and trying to reduce the skew by
 An important thing to address is the fact that outliers in the dataset aren't removed. This is for the sole reason that there is no justification to do so, there also wasn't much information given on how the data was gathered. Seeing as the data was most likely gathered from a controlled experiment, it should be assumed that these data points aren't incorrect inputs or caused by environmental errors, but actual correct measurement. This means that these outliers are actual possibilities that could be found in nature, which is why they shouldn't be removed. Some of the outliers could also be a result of a bias in the making of the samples. There were also no obvious erroneous instances that needed to be removed.
 
 ### Data cleaning
-The only data cleaning that was done was the removal of columns and min max normalization. The reason behind the removal of these columns was that these columns where technically other labels that could have been used in machine learning. Some of them could have been left in seeing as they could be interesting in future research, but this would just clutter up the dataset. Even though some of the variables seem to be highly correlated, it was decided not to remove some of them. This is mostly because they could still hold valuable information seeing as they aren't one hundred percent correlated. Another reasons not to remove variables with a high degree of correlation was because of the possible issues with the PCA plot. These variables could still be removed in the future to check if this further improves the machine learning algorithm. The biggest reason why they weren't removed was because the PCA plot is based on the assumption that the correlation between variables is linear. In some comparisons variables will indeed have a strong correlation, but this might change when another dimension like the sterol type is added. An example of this can be found in the results chapter in figure 2. When trying to fit a linear regression line through all of the data point, you would probably get a pretty strong correlation. But once colored on sterol type, it becomes very clear that the correlation isn't linear but inverse logarithmic.
+The only data cleaning that was done was the removal of columns and min max normalization. The reason behind the removal of these columns was that these columns where technically other labels that could have been used in machine learning. Some of them could have been left in seeing as they could be interesting in future research, but this would just clutter up the dataset. Even though some of the variables seem to be highly correlated, it was decided not to remove some of them. This is mostly because they could still hold valuable information seeing as they aren't one hundred percent correlated. Another reasons not to remove variables with a high degree of correlation was because of the possible issues with the PCA plot. These variables could still be removed in the future to check if this further improves the machine learning algorithm. The biggest reason why they weren't removed was because the PCA plot is based on the assumption that the correlation between variables is linear. In some comparisons variables will indeed have a strong correlation, but this might change when another dimension like the sterol type is added. An example of this can be found in the results chapter in figure 3. When trying to fit a linear regression line through all of the data point, you would probably get a pretty strong correlation. But once colored on sterol type, it becomes very clear that the correlation isn't linear but inverse logarithmic.
 
 In the cleaning of the data, min max normalization was used. This leads to a suppression of the effect of outliers. To combat this, z score normalization could have been used. The only problem with this is that z score normalization is based on a normal distribution, while most of the data in the dataset has a moderate to heavy skew. Something to combat this would be using transformation. It was however decided not to make use of this, seeing as, in testing, this lessens the skew in most data, but not by a big margin. The choice not to transform the data could lead to problems in the future if we where to use an algorithm that assumes the data has a Gaussian distribution. However, as previously stated, even transforming the data didn't reduce skewness by a large margin. 
 
@@ -452,7 +452,7 @@ nona_data %>%
                       "tilt", "zorder","compress"), names_to = "Variable", values_to = "Value") %>%
   ggplot(aes(x = Variable, y = Value)) +
   geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  ggtitle("Figure 0: Histogram of the variables")
+  ggtitle("Figure 1: Histogram of the variables")
 
 # Create density plots
 p <- ggplot(nona_data, aes(x=bending, colour = factor(sterol.type))) + 
@@ -487,7 +487,7 @@ p4 <- ggplot(nona_data, aes(x=APL, colour = factor(tails))) +
 plots <- ggarrange(p, p2, p3, p4,
                    labels = c("A", "B", "C", "D"),
                    ncol = 2, nrow = 2)
-title <- expression(atop(bold("Figure 1:"), 
+title <- expression(atop(bold("Figure 2:"), 
                          scriptstyle(paste("Density plots of multiple",
                                            " variables coloured on membrane components"
                                            ))))
@@ -531,7 +531,7 @@ plots <- ggarrange(chart,
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2)
 
-title <- expression(atop(bold("Figure 2:"), 
+title <- expression(atop(bold("Figure 3:"), 
                          scriptstyle(paste("Relation between APL and bending ",
                                            "rigidity of three different sterol ",
                                            "types, with and without loess regression line"))))
@@ -576,7 +576,7 @@ plots <- ggarrange(chart,
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2) 
 
-title <- expression(atop(bold("Figure 3:"), 
+title <- expression(atop(bold("Figure 4:"), 
                          scriptstyle(paste("Relation between compressibility and bending ",
                                            "rigidity of three different sterol ",
                                            "types, full and zoomed"))))
@@ -600,7 +600,7 @@ plots <- ggarrange(chart,
                    labels = c("A"),
                    ncol = 1) 
 
-title <- expression(atop(bold("Figure 3:"), 
+title <- expression(atop(bold("Figure 5:"), 
                          scriptstyle(paste("Relation between APL and bending ",
                                            "rigidity of three different sterol ",
                                            "types with different saturation levels"))))
@@ -632,7 +632,7 @@ plot <- arrangeGrob(plot1,  plot2,
 plot <- as_ggplot(plot) +
   draw_plot_label(label = c("A", "B", "C"), size = 15,
                   x = c(0, 0.5, 0), y = c(1, 1, 0.5))
-title <- expression(atop(bold("Figure 4:"), 
+title <- expression(atop(bold("Figure 6:"), 
                          scriptstyle("PCA results using fviz_eig")))
 annotate_figure(plot,
                 top=text_grob(title))
