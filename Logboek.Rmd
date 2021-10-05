@@ -138,7 +138,7 @@ kable(sum, caption="Five number summary") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 Looking at the structure there doesn't seem to be immediate problem with the data, like the data being read as the wrong datatype. When looking at the five number summary, depicted in table 3, there do seem to be some rows that are missing values like the APL, thickness, bending and tilt values. These rows will be omitted for plotting and other research seeing as they can't be used.
-The maximum of the bending rigidity and tilt angle seem to be too high, this probably means that these are outliers seeing as the rest of the values in the summary seem to be believable. To check this we'll make a histogram of these variables.
+The maximum of the bending rigidity and tilt angle seem to be too high, this probably means that these are outliers seeing as the rest of the values in the summary seem to be believable. To check this we'll make a histogram and a boxplot of these variables.
 
 ```{r "Omit NA's"}
 # Remove NA's
@@ -149,6 +149,22 @@ paste("Number of NA's before: ", sum(row.has.na),
 ", Number of NA's after:", sum(row.has.na.2), sep="")
 ```
 `r sum(row.has.na) - sum(row.has.na.2)` lines with NA's where omitted from the data set.
+
+Here is a boxplor of all of the variables to check for any outliers.
+```{r Boxplot}
+nona_data %>% 
+  select("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress") %>%
+  pivot_longer(., cols = c("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  ggtitle("Figure 0: Histogram of the variables")
+```
+
+The boxplot clearly shows that there are indeed a lot of outliers to be found in the dataset, especially in the bending rigidity, compressibility and tilt ange columns. Outliers are shown as black dots in the plot. Some variables also have very clean distributions, this is mostly because some variables are numerical but only contain a few different levels because of the experiment that they where gathered from.
 
 
 ```{r Histograms}

@@ -25,6 +25,8 @@ library(tidyr)
 library(purrr)
 library(ggcorrplot)
 library(reshape2)
+library(e1071) 
+library(Hmisc)
 ```
 ```{r Data reading & structure, echo=FALSE}
 # Read the data and transform it to a tibble
@@ -57,11 +59,14 @@ get_des_by_ab <- function(df, abbreviation){
 ```
 
 # Short introduction
-This report is to describe the results of the exploratory data analysis and data cleaning done on a dataset of membrane composition and characteristics. The data was provided by Tsjerk Wassenaar of the RuG. The data set contains data on membrane composition and characteristics. The data set is not publicly available. The data set also does not have a publication linked to it.
+This report is to describe the results of the exploratory data analysis and data cleaning done on a dataset of membrane composition and characteristics. The data was provided by Tsjerk Wassenaar of the RuG. The data set contains data on membrane composition and characteristics. The data set is not publicly available. The data set also does not have a publication linked to it. There is no paper linked to the dataset and there was little information given in general.
 
-Seeing as there is no paper linked to the data set I can only guess using the information that I did get that the data was gathered by making a membrane using specific variables and the measuring the resulting membranes to get variables like the thickness and compressibility.
-The data set contains 14 variables and 2843 different measurement. The goal is to use measurement to predict the composition of the membrane. 
+The data set contains 14 variables and 2843 different instances. The goal is to use measurement/membrane characteristics like the bending rigidity to predict the composition of the membrane. 
 Typically you would use independent variables to predict one dependent variable. In this data set this doesn't seem to be the case, seeing as the variables that are given as parameters are seen as class variables, this means that these would be considered the labels. The parameters are: Temperature, Sterol type, Sterol concentration, Other (phospho)lipids in membrane, Aliphatic tails, Saturation index, Phosphatidyl choline concentration and Ethanol concentration. So the biggest question that the EDA should answer is which of these variables is most interesting to use as the label, or could we even predict multiple of them using the given variables.
+
+The main goals of the EDA where to give insight into the data, and to prepare the data for machine learning experiments. Giving insight into the data means looking for relations between variables and finding clusters. Cleaning the data consists of things like transforming values and scaling the data.
+
+
 
 
 \newpage
@@ -88,6 +93,47 @@ kable(sum, caption="Five number summary of the original dataset") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
+Table 1 shows the five number summary of all of the numerical columns that are present in the dataset. Inspecting this table closely, a deviation in the mean and the median of some of the columns can be observed. This is an indication that our data might be skewed. This is an important observation, seeing as some algorithms expect the data to have a Gaussian(normal) distribution. The results of calculating exact skew of all of the numeric columns can be found in table 2. The table shows that there is indeed a moderate (|Skew|> 0.5) to heavy skew (|Skew| > 1.0) in almost every column.
+Another thing to take note of in table 1 is the extremely high maximum values of the bending and the tilt columns. This tells us that there are probably some outliers in these columns. To confirm this a boxplot is made, the results of this are shown in figure 0.
+
+```{r Skew, echo=FALSE}
+# Calculate the skew on every column
+results <- data.frame("Skew" = apply(nona_data[c("temperature","sterol.conc","satur.index",
+                                                 "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                                                 "tilt", "zorder","compress")], 2, skewness, na.rm =TRUE))
+
+# Print results using kable
+kable(t(results), caption="Skew in numeric columns") %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+```
+
+Figure 0 shows that there are indeed a lot of outliers to be found in the dataset, especially in the bending rigidity, compressibility and tilt ange columns. Outliers are shown as black dots in the plot. Some variables also have very clean distributions without whiskers. This is mostly because some variables are numerical but only contain a few different levels because of the experiment that they where gathered from.
+
+Any type of normalization or transformation was dealt with in the data cleaning. The NA's that are present were also be removed in the data cleaning.
+
+```{r Boxplot, echo=FALSE}
+# Make a boxplot of the numeric columns
+nona_data %>% 
+  select("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress") %>%
+  pivot_longer(., cols = c("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  ggtitle("Figure 0: Histogram of the variables")
+```
+
+The results of plotting some variables and coloring them based on certain class variables can be seen in figure 1. These density plots are made to look whether or not it might by possible to distinguish between class variables based on one specific variable.
+
+Plot A in figure 1 show that there is basically no distinction between cholesterol and ergosterol based on the bending rigidity. However, distinguishing between no sterol or a sterol does seem to be possible based on the bending rigidity seeing as the peaks of these classes only overlaps a small bit. There does seem to be an odd peak in the no sterol class at around 50 kB/t bending rigidity.
+
+In plot B it looks like there is no way of distinguishing different types of sterol based on the area per lipid, seeing as the peaks are basically in the same place. But just to be certain we'll still plot in against some other variables to make sure, seeing as it might be a very useful variable when paired with something like bending rigidity.
+The results depicted in plot C also don't look very promising seeing as every peak is around the same place again.
+Plot D on the other hand seems a lot more interesting seeing as all of the peaks are in slightly different locations, the DO, PO and the PI seem to overlap a lot but the DP and DI tails seem to have little overlap with the rest. It seems like APL could possibly be used as a variable to distinguish between aliphatic tails when paired with another variable.
+
+When looking at all of the plots it looks like most of the data is skewed in one way or another, confirming the numbers given by the five number summary.
 
 ```{r Density plot arrangement, echo=FALSE}
 # Create density plots
@@ -129,19 +175,6 @@ annotate_figure(plots,
                 top=text_grob(title))
 ```
 
-Table 1 shows the five number summary of all of the numerical columns that are present in the dataset. Inspecting this table closely, a deviation in the mean and the median of some of the columns can be observed. This is an indication that our data might be skewed. This is an important observation, seeing as some algorithms expect the data to have a Gaussian(normal) distribution. Any type of normalization or transformation was dealt with in the data cleaning. The NA's that are present were also be removed in the data cleaning.
-
-The results of plotting some variables and coloring them based on certain class variables can be seen in figure 1. These density plots are made to look whether or not it might by possible to distinguish between class variables based on one specific variable.
-
-Plot A in figure 1 show that there is basically no distinction between cholesterol and ergosterol based on the bending rigidity. However, distinction between no sterol or a sterol does seem to be possible based on the bending rigidity seeing as the peaks of there classes only overlaps a small bit. There does seem to be an odd peak in the no sterol class at around 50 kB/t bending rigidity.
-
-In plot B it looks like there is absolutely no way of distinguishing different classes based on the area per lipid, seeing as the peaks are basically in the same place. But just to be certain we'll still plot in against some other variables to make sure, seeing as it might be a very useful variable when paired with something like bending rigidity.
-The results depicted in plot C also don't look very promising seeing as every peak is around the same place again.
-Plot D on the other hand seems a lot more interesting seeing as all of the peaks are in slightly different locations, the DO, PO and the PI seem to overlap a lot but the DP and DI tails seem to have little overlap with the rest. It seems like APL could possibly be used as a variable to distinguish between aliphatic tails when paired with another variable.
-
-When looking at all of the plots it looks like most of the data is skewed in one way or another, confirming the numbers given by the five number summary.
-
-
 ```{r APL Bending plot, echo=FALSE, warning=FALSE, message=FALSE}
 #Plot APL against bending rigidity
 chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) + 
@@ -174,7 +207,7 @@ annotate_figure(plots,
 An interesting correlation that was found in the data exploration is shown in figure 2. It shows that there is an inverse logarithmic correlation between the area per lipid of a membrane and the bending rigidity. An even more interesting observation is the fact that, when colored on sterol type, it shows that there is a big difference between the no sterol group and the other two groups. This means that this ratio could be very important in the prediction of sterol type based on the membrane characteristics. It does however seem like these variables aren't useful when it comes to discerning between ergosterol and cholesterol.
 
 The results of plotting the compressibility of the membrane against the bending rigidity can be found in figure 3. 
-In plot A of figure 3 we can't really make out much of a pattern in the dense clout to the left, but when looking at the rest of the data points there does seem to be some grouping based on whether or not no sterol or a sterol is present. When zooming in in plot B we can now see the same kind of grouping happen again based on either a sterol present or no sterol present. Something else that figure 3 shows it that a log transformation on the compressibility variable might be in order seeing as there are a lot of point in the magnitude of tens but also a lot in the hundreds.
+In plot A of figure 3 we can't really make out much of a pattern in the dense clout to the left, but when looking at the rest of the data points there does seem to be some grouping based on whether or not no sterol or a sterol is present. When zooming in in plot B it no shows the same kind of grouping happen again based on either a sterol present or no sterol present. Something else that figure 3 shows it that a log transformation on the compressibility variable might be in order seeing as there are a lot of point in the magnitude of tens but also a lot in the hundreds.
 
 ```{r bending compress plot, warning=FALSE, echo=FALSE}
 # Create plot
@@ -224,7 +257,8 @@ annotate_figure(plots,
 
 In figure 4 the area per lipid is again plotted against the bending rigidity, only this time, the plot is colored based on the saturation index.
 
-The results shown in figure 4 show an interesting pattern. It seems that a specific saturation index is only found in membranes within a specific range of area per lipid and bending rigidity.
+The results shown in figure 4 show an interesting pattern. It seems that a specific saturation index is only found in membranes within a specific range of area per lipid and bending rigidity. This is shown by the fact that there seem to be little clusters of color that have formed in the graph. A saturation index of zero and two seem to be the most well defined, seeing as these clusters are basically separate from the other saturation indexes. The saturation indexes of zero point five and one on the other hand seem to have a lot of overlap between them. All of this means that area per lipid to bending rigidity ratio could also be promising in classifying the saturation index of a membrane.
+
 
 ```{r APl against bending saturation, echo=FALSE}
 # Create plots
@@ -242,7 +276,7 @@ plots <- ggarrange(chart,
                    labels = c("A"),
                    ncol = 1) 
 
-title <- expression(atop(bold("Figure 3:"), 
+title <- expression(atop(bold("Figure 4:"), 
                          scriptstyle(paste("Relation between APL and bending ",
                                            "rigidity of three different sterol ",
                                            "types with different saturation levels"))))
@@ -250,10 +284,9 @@ annotate_figure(plots,
                 top=text_grob(title))
 ```
 
+To look for correlation between the variables and clustering a PCA plot was made. This plot is shown in figure 5.
 
-To look for correlation between the variables and clustering a PCA plot was made. This plot is shown in figure 4.
-
-Plot A in figure 4 shows something that is quite strange. It states that over 80% of the variance can be explained by the first principle component, this is quite odd. Plot B shows that some of the variables seem to be highly correlated like z order and thickness just like tilt angle and bending rigidity seeing as their arrows are pointing in the same direction. Area per lipid(APL) on the other hand seems to be negatively correlated to z order and thickness.
+Plot A in figure 5 shows something that is quite strange. It states that over 80% of the variance can be explained by the first principle component, this is quite odd. Plot B shows that some of the variables seem to be highly correlated like z order and thickness just like tilt angle and bending rigidity seeing as their arrows are pointing in the same direction. Area per lipid(APL) on the other hand seems to be negatively correlated to z order and thickness.
 When looking at plot C there doesn't seem to be any obvious form of clustering, if any, for that matter.
 
 All of the results from the data exploration led to the following research question: Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given certain measurements like the bending rigidity, the are per lipid and the compressibility?
@@ -284,7 +317,7 @@ plot <- arrangeGrob(plot1,  plot2,
 plot <- as_ggplot(plot) +
   draw_plot_label(label = c("A", "B", "C"), size = 15,
                   x = c(0, 0.5, 0), y = c(1, 1, 0.5))
-title <- expression(atop(bold("Figure 4:"), 
+title <- expression(atop(bold("Figure 5:"), 
                          scriptstyle("PCA results using fviz_eig")))
 annotate_figure(plot,
                 top=text_grob(title))
@@ -293,7 +326,7 @@ annotate_figure(plot,
 
 ## Data cleaning
 
-To make the dataset usable for machine learning it had to be cleaned up using various of methods. The difference between the cleaned dataset and the original dataset can be seen when comparing table 2 and table 3. Unused columns like temperature and ethanol concentration where removed. All of the data in the columns was scaled using min max normalization. This is visible in table 3, seeing as the values now range from zero to one. NA's where also omitted. It was decided not to remove any variables based on a high degree of correlation. Table 3 doesn't have all of the variables that table 2 has. This is because the variables that where removed would be seen as labels from a machine learning point of view. Seeing as this research is interested in only one of the labels, sterol type, the other where removed.
+To make the dataset usable for machine learning it had to be cleaned up using various of methods. The difference between the cleaned dataset and the original dataset can be seen when comparing table 3 and table 4. Unused columns like temperature and ethanol concentration where removed. All of the data in the columns was scaled using min max normalization. This is visible in table 4, seeing as the values now range from zero to one. NA's where also omitted. It was decided not to remove any variables based on a high degree of correlation. Table 4 doesn't have all of the variables that table 3 has. This is because the variables that where removed would be seen as labels from a machine learning point of view. Seeing as this research is interested in only one of the labels, sterol type, the other where removed.
 
 ```{r Head data, echo=FALSE}
 kable(head(data), caption="Top of original data") %>%
@@ -303,7 +336,7 @@ kable(head(scaled_data), caption="Top of cleaned data") %>%
   kable_styling(latex_options = c("hold_position"), full_width = TRUE)
 ```
 
-In table 4, the five number summary of the cleaned dataset can be found. It shows that all of the data is now on a common scale of zero to one, and that all of the NA's from the original dataset where omitted. This can be deduced from the fact that there is no line present in the table with the number of NA's, seeing as when there are no NA's present, this line won't be returned.
+In table 5, the five number summary of the cleaned dataset can be found. It shows that all of the data is now on a common scale of zero to one, and that all of the NA's from the original dataset where omitted. This can be deduced from the fact that there is no line present in the table with the number of NA's, seeing as when there are no NA's present, this line won't be returned.
 
 ```{r Five number summary 2, echo=FALSE}
 # Get the five number summary of the selected columns
@@ -320,26 +353,29 @@ kable(sum, caption="Five number summary of the cleaned dataset") %>%
 
 # Discussion and Conclusion
 
-## Conclusion
-To conclude, based on the finding of the data exploration it is safe to assume that the sterol type of a given membrane can be predicted by specific measurements of the membrane. This can be said because a multitude of plots states that there is a difference between ratios of variables, that is caused by a specific sterol in the membrane. An example of this is the ratio of area per lipid to bending rigidity, which shows a clear difference between no sterol and a sterol present in the membrane.
-It is also safe to assume that the dataset is suitable for machine learning experiments after some small adjustments and modifications.
+## Results summary
+The goal of the data exploration was to find possible relations between variables that could give insight into the data. Using these findings could help in refining the research question. Another goal was to clean the dataset so it could be used for machine learning
+From the results gathered by the exploration of the data, we found that there are indeed some relations between variables. We also found that some of these relations could be useful in discerning between sterol types in membranes. The goal of making the data suitable for machine learning was also achieved. 
+
 
 ## Discussion
 ### Exploration
-One of the most important things to note is that there was probably an subconscious bias in the exploration of the data. This is because most of the steps where taken while there was already a research question. Because of this the exploration was probablymore focused on refining the research question then on looking for unexpected patterns.
+One of the most important things to note is that there was probably an subconscious bias in the exploration of the data. This is because most of the steps where taken while there was already a research question. Because of this the exploration was probably more focused on refining the research question then on looking for unexpected patterns.
 
-The PCA plot was made before any of the data cleaning step. This means that the data wasn't transformed or normalized. The function used to plot the PCA plot did have the option to scale the data enabled, which should have taken care of any scaling issues. Except that this function might make use of z score scaling, in which case the results might not be totally accurate seeing as there is a slight skew in some of our variables. Z score scaling assumes that our data has a normal distribution, which is why it might have caused problems.
-Even after taking this into account and trying to reduce the skew by using log and square transformations, we were still left with a slight skew. Even reducing the skew, the scree plot still showed around the same amount of variance explained by each dimension and PCA plot still showed around the same amount of correlation. The main difference being that the plot is now flipped upside down.
+The PCA plot was made before any of the data cleaning step. This means that the data wasn't transformed or normalized. The function used to plot the PCA plot did have the option to scale the data enabled, which should have taken care of any scaling issues. Except that this function might make use of z score scaling, in which case the results might not be totally accurate seeing as there is a slight skew in some of our variables. Z score scaling works better on data that is normally distributed, which is why it might have caused problems.
+In testing, even after taking this into account and trying to reduce the skew by using log and square transformations, we were still left with a slight skew. Even reducing the skew, the scree plot still showed around the same amount of variance explained by each dimension and PCA plot still showed around the same amount of correlation.
 
 An important thing to address is the fact that outliers in the dataset aren't removed. This is for the sole reason that there is no justification to do so, there also wasn't much information given on how the data was gathered. Seeing as the data was most likely gathered from a controlled experiment, it should be assumed that these data points aren't incorrect inputs or caused by environmental errors, but actual correct measurement. This means that these outliers are actual possibilities that could be found in nature, which is why they shouldn't be removed. Some of the outliers could also be a result of a bias in the making of the samples. There were also no obvious erroneous instances that needed to be removed.
 
 ### Data cleaning
-The only data cleaning that was done was the removal of columns and min max normalization. The reason behind the removal of these columns was that these columns where technically other labels that could have been used in machine learning. Some of them could have been left in seeing as they could be interesting in future research, but this would just clutter up the dataset. Even though some of the variables seem to be highly correlated, it was decided not to remove some of them. This is mostly because they could still hold valuable information seeing as they don't have a correlation of one. Another reasons is because of the possible problems that where raised about the PCA plot. These variables could still be removed in the future to check if this further improves the machine learning algorithm. The biggest reason why they weren't removed was because the PCA plot is based on the assumption that the correlation between variables is linear. In some comparisons variables will indeed have a strong correlation, but this might change when another dimension like the sterol type is added. An example of this can be found in the results chapter in figure 2. When trying to fit a linear regression line through all of the data point, you would probably get a pretty strong correlation. But once colored on sterol type, it becomes very clear that the correlation isn't linear but inverse logarithmic.
+The only data cleaning that was done was the removal of columns and min max normalization. The reason behind the removal of these columns was that these columns where technically other labels that could have been used in machine learning. Some of them could have been left in seeing as they could be interesting in future research, but this would just clutter up the dataset. Even though some of the variables seem to be highly correlated, it was decided not to remove some of them. This is mostly because they could still hold valuable information seeing as they aren't one hundred percent correlated. Another reasons not to remove variables with a high degree of correlation was because of the possible issues with the PCA plot. These variables could still be removed in the future to check if this further improves the machine learning algorithm. The biggest reason why they weren't removed was because the PCA plot is based on the assumption that the correlation between variables is linear. In some comparisons variables will indeed have a strong correlation, but this might change when another dimension like the sterol type is added. An example of this can be found in the results chapter in figure 2. When trying to fit a linear regression line through all of the data point, you would probably get a pretty strong correlation. But once colored on sterol type, it becomes very clear that the correlation isn't linear but inverse logarithmic.
 
-In the cleaning of the data, min max normalization was used. This leads to a suppression of the effect of outliers. To combat this, z score normalization could have been used. The only problem with this is that z score normalization is based on a normal distribution, while all of the data in the dataset is heavily skewed. Something to combat this would be using transformation. It was however decided not to make use of this, seeing as this lessens the skew in most data, but not by a big margin. The choice not to transform the data could lead to problems in the future if we where to use an algorithm that assumes the data has a Gaussian distribution. However, as previously stated, even transforming the data didn't reduce skewness by a large margin. 
+In the cleaning of the data, min max normalization was used. This leads to a suppression of the effect of outliers. To combat this, z score normalization could have been used. The only problem with this is that z score normalization is based on a normal distribution, while most of the data in the dataset has a moderate to heavy skew. Something to combat this would be using transformation. It was however decided not to make use of this, seeing as, in testing, this lessens the skew in most data, but not by a big margin. The choice not to transform the data could lead to problems in the future if we where to use an algorithm that assumes the data has a Gaussian distribution. However, as previously stated, even transforming the data didn't reduce skewness by a large margin. 
 
-## Future research
-The research done can be used to show more insight into sterols effect on characteristics of a membrane. It also gives insight into the dataset, and shows how it can be transformed for use in machine learning. Future research done should focus on the actual usage of machine learning algorithms on the dataset.
+## Conclusion & Future research
+To conclude, based on the finding of the data exploration it is safe to assume that the sterol type of a given membrane can be predicted by specific measurements of the membrane. This can be said because a multitude of plots states that there is a difference between ratios of variables, that is caused by a specific sterol in the membrane. An example of this is the ratio of area per lipid to bending rigidity, which shows a clear difference between no sterol and a sterol present in the membrane.
+It is also safe to assume that the dataset is suitable for machine learning experiments after some small adjustments and modifications.
+The research done can be used to show more insight into sterols effect on characteristics of a membrane. It also gives insight into the dataset, and shows how it can be transformed for use in machine learning. Future research done should focus on the actual usage of machine learning algorithms on the dataset. Something future research could also expand on is maybe predicting multiple labels using the same measurement, or maybe even predicting the entire membrane composition, instead of predicting only one component of the membrane.
 
 \newpage
 # Apendix
@@ -359,6 +395,8 @@ library(tidyr)
 library(purrr)
 library(ggcorrplot)
 library(reshape2)
+library(e1071) 
+library(Hmisc)
 
 # Read the data and transform it to a tibble
 data <- read.csv("data/dataFrame_all_sims.csv", 
@@ -402,6 +440,18 @@ rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number o
 kable(sum, caption="Five number summary of the original dataset") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 
+# Make a boxplot of the numeric columns
+nona_data %>% 
+  select("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress") %>%
+  pivot_longer(., cols = c("temperature","sterol.conc","satur.index",
+                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                      "tilt", "zorder","compress"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  ggtitle("Figure 0: Histogram of the variables")
+
 # Create density plots
 p <- ggplot(nona_data, aes(x=bending, colour = factor(sterol.type))) + 
   geom_density() +   
@@ -430,15 +480,34 @@ p4 <- ggplot(nona_data, aes(x=APL, colour = factor(tails))) +
   ylab("Density") +
   ggtitle("APL density") + 
   labs(colour = get_des_by_ab(codebook, "tails"))
+
 # Plot density plots
 plots <- ggarrange(p, p2, p3, p4,
                    labels = c("A", "B", "C", "D"),
                    ncol = 2, nrow = 2)
 title <- expression(atop(bold("Figure 1:"), 
                          scriptstyle(paste("Density plots of multiple",
-                                           " variables coloured on membrane components"))))
+                                           " variables coloured on membrane components"
+                                           ))))
 annotate_figure(plots,
                 top=text_grob(title))
+
+# Calculate the skew on every column
+results <- data.frame("Skew" = apply(nona_data[c("temperature",
+                                                 "sterol.conc",
+                                                 "satur.index",
+                                                 "PC.conc",
+                                                 "ethanol.conc",
+                                                 "APL", "thickness",
+                                                 "bending",
+                                                 "tilt", 
+                                                 "zorder",
+                                                 "compress")], 
+                                     2, skewness, na.rm =TRUE))
+
+# Print results using kable
+kable(t(results), caption="Skew in numeric columns") %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"))
 
 #Plot APL against bending rigidity
 chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) + 
@@ -455,7 +524,8 @@ chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) +
  
 plots <- ggarrange(chart,
                    chart + 
-                     geom_smooth(method = "loess") + ggtitle("APL against bending rigidity, including loess regression"),
+                     geom_smooth(method = "loess") + 
+                     ggtitle("APL against bending rigidity, including loess regression"),
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2)
 
@@ -512,14 +582,16 @@ annotate_figure(plots,
                 top=text_grob(title))
 
 # Create plots
-chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
+chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index),
+                                shape = factor(sterol.type) )) + 
   geom_jitter(alpha=1, size=0.5) +  
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending"))  + 
   ggtitle("APL against bending regidity, 
           coloured on saturation index, shaped on sterol type") + 
   theme(plot.title = element_text(size=10))
-chart <- chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_by_ab(codebook, "sterol.type"))
+chart <- chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"),
+                       shape = get_des_by_ab(codebook, "sterol.type"))
 
 # Arrange plots
 plots <- ggarrange(chart,
