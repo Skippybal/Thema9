@@ -76,7 +76,7 @@ The results are divided into two different subsection: data exploration and data
 
 ## Data exploration
 
-The biggest goal of the exploration phase was to give insight into the data, like relations between variables. Using this insight, the research question could be tweaked to have a higher likelihood of being achievable. Another question the exploration phase was looking to answer was whether or not the chosen dataset was suitable for machine learning.
+The biggest goal of the exploration phase was to give insight into the data, like relations between variables. Using this insight, the research question could be tweaked to have a higher likelihood of being achievable. Another question the exploration phase was looking to answer was whether or not the dataset was suitable for machine learning.
 
 ```{r Five number summary, echo=FALSE}
 # Get the five number summary of the selected columns
@@ -326,7 +326,7 @@ annotate_figure(plot,
 
 ## Data cleaning
 
-To make the dataset usable for machine learning it had to be cleaned up using various of methods. The difference between the cleaned dataset and the original dataset can be seen when comparing table 3 and table 4. Unused columns like temperature and ethanol concentration where removed. All of the data in the columns was scaled using min max normalization. This is visible in table 4, seeing as the values now range from zero to one. NA's where also omitted. It was decided not to remove any variables based on a high degree of correlation. Table 4 doesn't have all of the variables that table 3 has. This is because the variables that where removed would be seen as labels from a machine learning point of view. Seeing as this research is interested in only one of the labels, sterol type, the other where removed.
+To make the dataset usable for machine learning it had to be cleaned up using various of methods. The difference between the cleaned dataset and the original dataset can be seen when comparing table 3 and table 4. Unused columns like temperature and ethanol concentration where removed. All of the data in the columns was scaled using min max normalization. This is visible in table 4, seeing as the values now range from zero to one. NA's where also omitted. It was decided not to remove any variables based on a high degree of correlation. Table 4 doesn't have all of the variables that table 3 has. This is because the variables that where removed would be seen as labels from a machine learning point of view. Seeing as this research is interested in only one of the labels, sterol type, the others where removed.
 
 ```{r Head data, echo=FALSE}
 kable(head(data), caption="Top of original data") %>%
