@@ -591,6 +591,9 @@ Now the only thing left to do is add the sterol type label.
 scaled_data$sterol.type <- nona_data$sterol.type
 kable(head(scaled_data), caption="Cleaned data") %>%
   kable_styling(latex_options = c("hold_position"), full_width = TRUE)
+
+# Write new data to csv
+write.csv(scaled_data, "data/clean_data.csv", row.names = FALSE)
 ```
 Only the sterol type was added as the label, seeing as the other variables where considered labels by the assignment, and we're interested in the sterol type in the membrane. Looking at the PCA plot and the heatmap it would seem like some of the variables are heavily correlated. However, it was decided not to remove any of the variables as of this time.
 
@@ -643,3 +646,4 @@ kable(head(scaled_data), caption="Cleaned data") %>%
 # EDA Discussion
 I need to make this very clear.
 The EDA was made with a specific question in mind. This probably exposed the exploration steps to an subconscious bias when making plots and exploring relations between variables.
+
