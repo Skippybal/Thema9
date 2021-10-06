@@ -643,6 +643,12 @@ kable(head(scaled_data), caption="Cleaned data") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
+```{r}
+library(RWeka)
+write.arff(scaled_data, file = "data/scaled_data.arff")
+```
+
+
 # EDA Discussion
 I need to make this very clear.
 The EDA was made with a specific question in mind. This probably exposed the exploration steps to an subconscious bias when making plots and exploring relations between variables.
