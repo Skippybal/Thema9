@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 Setup of the libraries.
-```{r, message=FALSE, warning=FALSE}
+```{r}
 # Libraries
 library("ggplot2")
 library("kableExtra")
@@ -367,7 +367,7 @@ chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_b
 In figure 6 we can see the same kind of correlation as before, but now we can see that there also seem to be some kind of clustering based on the saturation index.
 
 Here is a plot that shows the compressibility plotted against the bending rigidity.
-```{r bending compress plot, warning=FALSE}
+```{r bending compress plot}
 # Create plot
 chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
   geom_point(alpha=2/10, size=0.5) +
@@ -435,7 +435,7 @@ The results shown in figure 8 are very interesting. It seems like all of the var
 
 # PCA
 Here we'll make a PCA plot to look for possible clusters.
-```{r PCA, warning=FALSE}
+```{r PCA}
 # PCA plot results
 pca_res <- prcomp(correlation, scale. = TRUE, center = TRUE)
 print(pca_res)
