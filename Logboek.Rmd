@@ -643,10 +643,47 @@ kable(head(scaled_data), caption="Cleaned data") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
+Here we rescale all of the possible labels to factors so when it is exported to a .arff file it will be encoded correctly.
+```{r Scaling2}
+scale_min_max <- function(x) (x - min(x)) / (max(x) - min(x))
+nona_copy <- nona_data
+
+#str(nona_copy)
+
+nona_copy[1:8] <- lapply(nona_copy[1:8], factor) 
+str(nona_copy)
+
+index <- sapply(nona_copy, is.numeric)
+nona_copy[index] <- lapply(nona_copy[index], scale_min_max)
+
+#scaled_data <- as.data.frame(lapply(nona_copy, FUN=scale_min_max))
+#hist.data.frame(scaled_data)
+#str(nona_copy)
+```
+
+
+Here is a function to put a specific column as the last column for the encoding in the .arff file.
+```{r MakeLast}
+library(RWeka)
+Mutate_df <- function(data, last_wanted_column){
+  data %>%
+    relocate(last_wanted_column, .after = last_col()) %>%
+    #mutate_at(last_wanted_column, as.factor) %>%
+    write.arff(file = "data/scaled_data.arff")
+}
+Mutate_df(nona_copy, "tails")
+
+```
+
+
+
+Here is some code to make a .arff file.
 ```{r}
 library(RWeka)
 write.arff(scaled_data, file = "data/scaled_data.arff")
 ```
+
+
 
 
 # EDA Discussion
