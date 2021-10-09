@@ -667,7 +667,7 @@ Here is a function to put a specific column as the last column for the encoding 
 library(RWeka)
 Mutate_df <- function(data, last_wanted_column){
   data %>%
-    relocate(last_wanted_column, .after = last_col()) %>%
+    relocate(all_of(last_wanted_column), .after = last_col()) %>%
     #mutate_at(last_wanted_column, as.factor) %>%
     write.arff(file = "data/scaled_data.arff")
 }
