@@ -3,7 +3,9 @@ title: "Logboek"
 author: "Kasper Notebomer"
 date: "9/14/2021"
 output:
-  pdf_document: 
+  pdf_document:
+    toc: true
+    number_sections: true
     extra_dependencies: ["flafter", "tabularx"]
   html_document: default
 ---
@@ -433,7 +435,7 @@ ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) +
 ```
 The results shown in figure 8 are very interesting. It seems like all of the variables seem to be quite heavily correlated, except for APL, which is negatively correlated. It also seem like the comprehensibility is slightly less correlated then the rest of the variables. But thickness, bending, tilt and z order all seem to be heavily correlated.
 
-# PCA
+## PCA
 Here we'll make a PCA plot to look for possible clusters.
 ```{r PCA}
 # PCA plot results
@@ -506,7 +508,7 @@ annotate_figure(plot,
 The PCA plots, B and C, shown in figure 10 confirms what we could already see in the heat map, that is that most of the variables seem to be heavily correlated, seeing as they are pointing in the same direction, except for APL and compress. We can also see that thickness and z order are correlated just like tilt and bending. The PCA plot also still looks the same, only now it has as ellipse for clusters that was calculated using a t test. The ellipses all seem to overlap so there doesn't seem to be much clustering. 
 
 
-# K means 
+## K means 
 Here we'll use K-means clustering as a different technique to find possible clusters.
 ```{r K-means}
 # Calculate K-means, set seed for reproducibility
@@ -692,6 +694,10 @@ write.arff(scaled_data, file = "data/scaled_data.arff")
 
 The two most important metrics that we'll be using are the accuracy and the confusion matrix. The accuracy is important becuase it tells us how accurate the algorithm is. The confusion matrix is also very important seeing as this can tell us if the model may be prediction some classes with high accuracy while have a very poor accuracy on other classes.
 
+## Performance
+
+The speed of the algorithm isn't of the utmost importance, we would rather have a very accurate model that is slow as hell, then a really fast one at the cost of accuracy. Scalability wise, it should be able to deal with a rather large amount of data. We could use online classification, but it seems like this wouldn't really be productive seeing as the distribution or the classification method won't change over time. With batch classification we keep full control over the data that we use when training, while with online classification we are at risk that due to a feed of bad data that could be entered, which would then change the model. To combat this we would need to filter all of the data that goes in, which is feasible but a lot of work. It would save us resources but this isn't really a concern to start with. Batch learning is also more time intesive than online learning, but this also isn't really a concern.
+
 ## Output
 
 ### Sterol prediction
@@ -740,7 +746,44 @@ R-data-frame & 42.94 & 56.65 & $\circ$ & 59.51 & $\circ$ & 47.83 & $\circ$ & 57.
 }
 \end{table}
 
-These aren't the result we where hoping for. It seems like there is no way of descerning between sterol type, seeing as the highest achieved accuracy is equal to around 61%. This is quite poor to say the least. Maybe we should take a closer look at the confusion matrix of some of the algorithems to see if we can find out what's going on here. When we look at the confusion matrices of LMT, RandomForest and SimpleLogistic, we get a pretty good idea of what is goin on here. It seems like the algorithms are very capable of predicting whether or not there is a sterol present in the membrane or not. They just cant distinguis between ergosterol and cholesterol. We can test this hypothisis even further by removing all of the instances that have no sterol in the membrane. If what we saw here is indeed what is going on, we would expect to see around a 50% accuracy. If this is the case we could change the encoding in the dataset from "no", "ergo" and "chole" to just "no" and combine ergo and chole into "yes". The entire collumn can then be changed to just "sterol.present".
+
+These aren't the result we where hoping for. It seems like there is no way of descerning between sterol type, seeing as the highest achieved accuracy is equal to around 61%. This is quite poor to say the least. Maybe we should take a closer look at the confusion matrix of some of the algorithms to see if we can find out what's going on here. When we look at the confusion matrices of algorithems like LMT, RandomForest and SimpleLogistic, we get a pretty good idea of what is going on here. The confusion matrices of RandomForest and SimpleLogistic are show in table 11. It seems like the algorithms are very capable of predicting whether or not there is a sterol present in the membrane or not. They just can't distinguish between ergosterol and cholesterol. We can test this hypothesis even further by removing all of the instances that have no sterol in the membrane. If what we saw here is indeed what is going on, we would expect to see around a 50% accuracy. If this is the case we could change the encoding in the dataset from "no", "ergo" and "chole" to just "no" and combine ergo and chole into "yes". The entire column can then be changed to just "sterol.present".
+
+
+\begin{table}[thb]
+\caption{\label{RandomForest_confus}Confusion matrix from RandomForest and SimpleLogistics, sterol type}
+\begin{center}
+\begin{tabular}{lll}
+\begin{tabular}[c]{ c c c|p{3cm} }
+ \hline
+ \multicolumn{4}{ c }{RandomForest}\\
+ \hline
+ a & b & c & <-- classified as \\ 
+ \hline
+ 608 & 535 & 0 & a = chole \\  
+ \hline
+ 261 & 893 & 1 & b = ergo \\
+ \hline
+ 1 & 4 & 387 & c = no \\
+ \hline
+\end{tabular}
+&
+\begin{tabular}[c]{ c c c|p{3cm} }
+ \hline
+ \multicolumn{4}{ c }{SimpleLogistics}\\
+ \hline
+ a & b & c & <-- classified as \\ 
+ \hline
+ 624 & 511 & 8 & a = chole \\  
+ \hline
+ 585 & 564 & 6 & b = ergo \\
+ \hline
+ 18 & 2 & 372 & c = no \\
+ \hline
+\end{tabular}
+\end{tabular}
+\end{center}
+\end{table}
 
 ### Tails prediction
 
