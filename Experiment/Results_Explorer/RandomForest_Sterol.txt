@@ -1,0 +1,52 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1
+Relation:     R_data_frame
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+RandomForest
+
+Bagging with 100 iterations and base learner
+
+weka.classifiers.trees.RandomTree -K 0 -M 1.0 -V 0.001 -S 1 -do-not-check-capabilities
+
+Time taken to build model: 0.66 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances        1613               59.9628 %
+Incorrectly Classified Instances      1077               40.0372 %
+Kappa statistic                          0.3471
+Mean absolute error                      0.2605
+Root mean squared error                  0.3857
+Relative absolute error                 63.6532 %
+Root relative squared error             85.2592 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.464    0.298    0.535      0.464    0.497      0.170    0.686     0.654     chole
+                 0.603    0.401    0.531      0.603    0.564      0.200    0.688     0.558     ergo
+                 0.987    0.000    0.997      0.987    0.992      0.991    1.000     1.000     no
+Weighted Avg.    0.600    0.299    0.601      0.600    0.598      0.302    0.732     0.663     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 530 613   0 |   a = chole
+ 458 696   1 |   b = ergo
+   3   2 387 |   c = no
+

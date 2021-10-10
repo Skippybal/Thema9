@@ -1,0 +1,360 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.LMT -I -1 -M 15 -W 0.0
+Relation:     R_data_frame
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+Logistic model tree 
+------------------
+
+bending <= 0.054892: LM_1:99/198 (215)
+bending > 0.054892
+|   APL <= 0.072059: LM_2:26/224 (61)
+|   APL > 0.072059
+|   |   APL <= 0.499912
+|   |   |   bending <= 0.09339: LM_3:24/420 (86)
+|   |   |   bending > 0.09339
+|   |   |   |   bending <= 0.139443: LM_4:99/594 (155)
+|   |   |   |   bending > 0.139443: LM_5:99/594 (765)
+|   |   APL > 0.499912
+|   |   |   bending <= 0.125731
+|   |   |   |   compress <= 0.0412
+|   |   |   |   |   zorder <= 0.167491: LM_6:99/693 (343)
+|   |   |   |   |   zorder > 0.167491: LM_7:99/693 (144)
+|   |   |   |   compress > 0.0412
+|   |   |   |   |   bending <= 0.097968: LM_8:99/693 (593)
+|   |   |   |   |   bending > 0.097968: LM_9:99/693 (259)
+|   |   |   bending > 0.125731: LM_10:99/495 (69)
+
+Number of Leaves  : 	10
+
+Size of the Tree : 	19
+
+LM_1:
+Class chole :
+-27.44 + 
+[APL] * 9.66 +
+[thickness] * 6.48 +
+[bending] * -1412.15 +
+[tilt] * 28.68 +
+[zorder] * 48.97
+
+Class ergo :
+-200.11 + 
+[APL] * 143.42 +
+[thickness] * 7.06 +
+[bending] * 1571.65 +
+[tilt] * -0.17 +
+[zorder] * -0.4 +
+[compress] * -0.69
+
+Class no :
+58.96 + 
+[APL] * -61.63 +
+[thickness] * -42.01 +
+[bending] * -251.19 +
+[tilt] * -4.7 +
+[zorder] * -6.18 +
+[compress] * -5.52
+
+
+LM_2:
+Class chole :
+-25.31 + 
+[APL] * 10.02 +
+[thickness] * 6.48 +
+[bending] * 3.35 +
+[tilt] * -0.79 +
+[zorder] * -0.61 +
+[compress] * -0.07
+
+Class ergo :
+-25 + 
+[APL] * 9.37 +
+[thickness] * 6.67 +
+[bending] * 1.89 +
+[tilt] * 0.49 +
+[zorder] * -0.48 +
+[compress] * -0.07
+
+Class no :
+67.39 + 
+[APL] * -79.53 +
+[thickness] * -16.71 +
+[bending] * -135.57 +
+[tilt] * 20.32 +
+[zorder] * 12.1 +
+[compress] * 2.29
+
+
+
+LM_3:
+Class chole :
+-24.41 + 
+[APL] * 10.68 +
+[thickness] * 8.23 +
+[bending] * 3.85 +
+[tilt] * -0.21 +
+[zorder] * -2.94 +
+[compress] * 0.27
+
+Class ergo :
+-23.01 + 
+[APL] * 8.67 +
+[thickness] * 4.79 +
+[bending] * 1.57 +
+[tilt] * -0.24 +
+[zorder] * 1.68 +
+[compress] * -0.33
+
+Class no :
+68.9 + 
+[APL] * -89.33 +
+[thickness] * -16.71 +
+[bending] * -349.25 +
+[tilt] * 20.55 +
+[zorder] * 88.07 +
+[compress] * 2.29
+
+
+LM_4:
+Class chole :
+-14.54 + 
+[APL] * 14.53 +
+[thickness] * 17.02 +
+[bending] * 66.83 +
+[tilt] * -13.47 +
+[zorder] * -16.4 +
+[compress] * -28.57
+
+Class ergo :
+-0.88 + 
+[APL] * 4.86 +
+[thickness] * -4.03 +
+[bending] * -61.41 +
+[tilt] * 13.02 +
+[zorder] * 15.14 +
+[compress] * 28.51
+
+Class no :
+345.23 + 
+[APL] * -572.36 +
+[thickness] * -16.71 +
+[bending] * -1484.27 +
+[tilt] * 20.55 +
+[zorder] * 131.5 +
+[compress] * -118.14
+
+LM_5:
+Class chole :
+-8.56 + 
+[APL] * 11.69 +
+[thickness] * 9.58 +
+[bending] * 4.65 +
+[tilt] * 0.57 +
+[zorder] * -5.63 +
+[compress] * 0.34
+
+Class ergo :
+-6.86 + 
+[APL] * 7.7  +
+[thickness] * 3.41 +
+[bending] * 0.77 +
+[tilt] * -1.02 +
+[zorder] * 4.37 +
+[compress] * -0.4
+
+Class no :
+144.41 + 
+[APL] * -395.2 +
+[thickness] * 12.06 +
+[bending] * -603.81 +
+[tilt] * 20.55 +
+[zorder] * 97.8 +
+[compress] * 52.69
+
+
+
+
+LM_6:
+Class chole :
+1.55 + 
+[APL] * 2.41 +
+[thickness] * 13.07 +
+[bending] * -40.27 +
+[tilt] * -181.34 +
+[zorder] * 9.09 +
+[compress] * 40.13
+
+Class ergo :
+-17.03 + 
+[APL] * 16.98 +
+[thickness] * 0.03 +
+[bending] * 45.59 +
+[tilt] * 180.93 +
+[zorder] * -10.34 +
+[compress] * -40.19
+
+Class no :
+-215.17 + 
+[APL] * -79.52 +
+[thickness] * -16.71 +
+[bending] * -262.51 +
+[tilt] * 20.55 +
+[zorder] * 58.21 +
+[compress] * 2.29
+
+LM_7:
+Class chole :
+-0.94 + 
+[APL] * 6.33 +
+[thickness] * 30.83 +
+[bending] * -46.08 +
+[tilt] * -122.62 +
+[zorder] * 19.44 +
+[compress] * -168.42
+
+Class ergo :
+-14.54 + 
+[APL] * 13.05 +
+[thickness] * -17.73 +
+[bending] * 51.4 +
+[tilt] * 122.21 +
+[zorder] * -20.69 +
+[compress] * 168.36
+
+Class no :
+-215.17 + 
+[APL] * -79.52 +
+[thickness] * -16.71 +
+[bending] * -262.51 +
+[tilt] * 20.55 +
+[zorder] * 58.21 +
+[compress] * 2.29
+
+
+LM_8:
+Class chole :
+5.03 + 
+[APL] * -0.47 +
+[thickness] * 22.71 +
+[bending] * -96.96 +
+[tilt] * -130.17 +
+[zorder] * 11.83 +
+[compress] * -1.71
+
+Class ergo :
+-20.51 + 
+[APL] * 19.85 +
+[thickness] * -9.61 +
+[bending] * 102.28 +
+[tilt] * 129.76 +
+[zorder] * -13.08 +
+[compress] * 1.65
+
+Class no :
+-215.17 + 
+[APL] * -79.52 +
+[thickness] * -16.71 +
+[bending] * -262.51 +
+[tilt] * 20.55 +
+[zorder] * 58.21 +
+[compress] * 2.29
+
+LM_9:
+Class chole :
+-0 + 
+[APL] * -12.86 +
+[thickness] * -12.83 +
+[bending] * -50.54 +
+[tilt] * -237.68 +
+[zorder] * 116.26 +
+[compress] * -13.61
+
+Class ergo :
+-15.47 + 
+[APL] * 32.25 +
+[thickness] * 25.93 +
+[bending] * 55.85 +
+[tilt] * 237.27 +
+[zorder] * -117.51 +
+[compress] * 13.55
+
+Class no :
+-215.17 + 
+[APL] * -79.52 +
+[thickness] * -16.71 +
+[bending] * -262.51 +
+[tilt] * 20.55 +
+[zorder] * 58.21 +
+[compress] * 2.29
+
+LM_10:
+Class chole :
+-23.16 + 
+[APL] * 18.34 +
+[thickness] * 71.16 +
+[bending] * -25.4 +
+[tilt] * -1 +
+[zorder] * -33.69 +
+[compress] * -55.52
+
+Class ergo :
+7.68 + 
+[APL] * 1.04 +
+[thickness] * -58.06 +
+[bending] * 30.72 +
+[tilt] * 0.59 +
+[zorder] * 32.44 +
+[compress] * 55.46
+
+Class no :
+-83.17 + 
+[APL] * -79.52 +
+[thickness] * -16.71 +
+[bending] * -262.51 +
+[tilt] * 20.55 +
+[zorder] * 58.21 +
+[compress] * 2.29
+
+
+Time taken to build model: 1.56 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances        1888               70.1859 %
+Incorrectly Classified Instances       802               29.8141 %
+Kappa statistic                          0.5136
+Mean absolute error                      0.2398
+Root mean squared error                  0.3505
+Relative absolute error                 58.5833 %
+Root relative squared error             77.4888 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.532    0.169    0.699      0.532    0.604      0.383    0.781     0.738     chole
+                 0.773    0.351    0.624      0.773    0.690      0.419    0.778     0.656     ergo
+                 0.987    0.000    0.997      0.987    0.992      0.991    0.998     0.996     no
+Weighted Avg.    0.702    0.223    0.710      0.702    0.698      0.487    0.811     0.740     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 608 535   0 |   a = chole
+ 261 893   1 |   b = ergo
+   1   4 387 |   c = no
+

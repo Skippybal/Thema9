@@ -4,7 +4,7 @@ author: "Kasper Notebomer"
 date: "9/14/2021"
 output:
   pdf_document: 
-    extra_dependencies: ["flafter"]
+    extra_dependencies: ["flafter", "tabularx"]
   html_document: default
 ---
 
@@ -644,7 +644,7 @@ kable(head(scaled_data), caption="Cleaned data") %>%
 ```
 
 # Weka
-
+## Rescaling data
 Here we rescale all of the possible labels to factors so when it is exported to a .arff file it will be encoded correctly.
 ```{r Scaling2}
 scale_min_max <- function(x) (x - min(x)) / (max(x) - min(x))
@@ -664,16 +664,19 @@ nona_copy[index] <- lapply(nona_copy[index], scale_min_max)
 ```
 
 
-Here is a function to put a specific column as the last column for the encoding in the .arff file.
+Here is a function to put a specific column as the last column for the encoding in the .arff file. Some of the code is commented out so it won't create a lot of datasets that take up memory.
 ```{r MakeLast}
 library(RWeka)
 Mutate_df <- function(data, last_wanted_column){
   data %>%
     relocate(all_of(last_wanted_column), .after = last_col()) %>%
+    select(tail(names(.), 7)) %>%
     #mutate_at(last_wanted_column, as.factor) %>%
-    write.arff(file = "data/scaled_data.arff")
+    write.arff(file = paste0("data/scaled_data_", last_wanted_column, ".arff"))
 }
 Mutate_df(nona_copy, "tails")
+#Mutate_df(nona_copy, "sterol.type")
+#Mutate_df(nona_copy, "sterol.conc")
 
 ```
 
@@ -685,7 +688,108 @@ library(RWeka)
 write.arff(scaled_data, file = "data/scaled_data.arff")
 ```
 
+## Quality metrics
 
+The two most important metrics that we'll be using are the accuracy and the confusion matrix. The accuracy is important becuase it tells us how accurate the algorithm is. The confusion matrix is also very important seeing as this can tell us if the model may be prediction some classes with high accuracy while have a very poor accuracy on other classes.
+
+## Output
+
+### Sterol prediction
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
+"weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 -row-name-width 0 \
+-mean-width 2 -stddev-width 2 -sig-width 1 -count-width 0 -print-row-names -enum-col-names"\
+Analysing:  Percent_correct\
+Datasets:   1\
+Resultsets: 9\
+Confidence: 0.05 (two tailed)\
+Sorted by:  -\
+Date:       10/10/21, 4:18 PM\
+
+
+\begin{table}[thb]
+\caption{\label{Sterol_accuracy}Sterol prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & & (3) & & (4) & & (5) & & (6) & & (7) & & (8) & & (9) & \\
+\hline
+R-data-frame & 42.94 & 56.65 & $\circ$ & 59.51 & $\circ$ & 47.83 & $\circ$ & 57.30 & $\circ$ & 60.20 & $\circ$ & 57.07 & $\circ$ & 58.03 & $\circ$ & 70.03 & $\circ$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[thb]
+\caption{\label{Sterol_keys}Sterol prediction accuracy (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & rules.ZeroR '' 48055541465867954 \\
+(2) & rules.OneR '-B 50' -3459427003147861443 \\
+(3) & lazy.IBk '-K 100 -W 0 -A \textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash"\textbackslash"' -3080186098777067172 \\
+(4) & bayes.NaiveBayes '' 5995231201785697655 \\
+(5) & trees.J48 '-C 0.25 -M 200' -217733168393644444 \\
+(6) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
+(8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
+(9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+These aren't the result we where hoping for. It seems like there is no way of descerning between sterol type, seeing as the highest achieved accuracy is equal to around 61%. This is quite poor to say the least. Maybe we should take a closer look at the confusion matrix of some of the algorithems to see if we can find out what's going on here.
+
+### Tails prediction
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
+"weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 -row-name-width 0 \
+-mean-width 2 -stddev-width 2 -sig-width 1 -count-width 0 -print-row-names -enum-col-names"\
+Analysing:  Percent_correct  
+Datasets:   1  
+Resultsets: 9  
+Confidence: 0.05 (two tailed)  
+Sorted by:  -  
+Date:       10/10/21, 4:26 PM  
+
+
+\begin{table}[thb]
+\caption{\label{Tails_Accuracy}Accuracy tails prediction}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & & (3) & & (4) & & (5) & & (6) & & (7) & & (8) & & (9) & \\
+\hline
+R-data-frame & 37.81 & 82.28 & $\circ$ & 82.39 & $\circ$ & 77.83 & $\circ$ & 81.03 & $\circ$ & 99.47 & $\circ$ & 79.71 & $\circ$ & 99.42 & $\circ$ & 99.94 & $\circ$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[thb]
+\caption{\label{Keys}Accuracy tails prediction (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & rules.ZeroR '' 48055541465867954 \\
+(2) & rules.OneR '-B 50' -3459427003147861443 \\
+(3) & lazy.IBk '-K 100 -W 0 -A \textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash"\textbackslash"' -3080186098777067172 \\
+(4) & bayes.NaiveBayes '' 5995231201785697655 \\
+(5) & trees.J48 '-C 0.25 -M 200' -217733168393644444 \\
+(6) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
+(8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
+(9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+
+## Temporary results
 After running a multitude of test in weka to try and make a model to predict sterol type, I found something quite interesting. It seems that it is almost impossible to predict the sterol type in a membrane. By this I mean it is very hard to distinguish between ergosterol and cholesterol. It is however completely possible to predict whether or not there is a sterol present in the membrane. After running some test with the all of the instances with no sterol removed we see that almost every algorithm go's to 50% accuracy, meaning it's basically as good as zeroR. Even when using voting with OneR, ZeroR, RandomForest, J48, NaiveBayes, SimpleLogistic and SMO, we still only get 55.7006 % correctly classified instances (with the no sterol group removed). This gives us an interesting conclusion to the temporary research question. No, it is not possible to preditct the sterol in a membrane given certain measurements. It is however possible to distinguish between no sterol and a sterol. This leads me to conclude that there is just very little to no difference between ergosterol and cholesterol, seeing as when testing to predict the sterol concentration we get a 99.1297% using the voting of the same algorithms as used on sterol type (again on the data with instances with no sterol removed), and only given the measurements.
 
 
