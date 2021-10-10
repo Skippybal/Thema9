@@ -740,7 +740,7 @@ R-data-frame & 42.94 & 56.65 & $\circ$ & 59.51 & $\circ$ & 47.83 & $\circ$ & 57.
 }
 \end{table}
 
-These aren't the result we where hoping for. It seems like there is no way of descerning between sterol type, seeing as the highest achieved accuracy is equal to around 61%. This is quite poor to say the least. Maybe we should take a closer look at the confusion matrix of some of the algorithems to see if we can find out what's going on here.
+These aren't the result we where hoping for. It seems like there is no way of descerning between sterol type, seeing as the highest achieved accuracy is equal to around 61%. This is quite poor to say the least. Maybe we should take a closer look at the confusion matrix of some of the algorithems to see if we can find out what's going on here. When we look at the confusion matrices of LMT, RandomForest and SimpleLogistic, we get a pretty good idea of what is goin on here. It seems like the algorithms are very capable of predicting whether or not there is a sterol present in the membrane or not. They just cant distinguis between ergosterol and cholesterol. We can test this hypothisis even further by removing all of the instances that have no sterol in the membrane. If what we saw here is indeed what is going on, we would expect to see around a 50% accuracy. If this is the case we could change the encoding in the dataset from "no", "ergo" and "chole" to just "no" and combine ergo and chole into "yes". The entire collumn can then be changed to just "sterol.present".
 
 ### Tails prediction
 
