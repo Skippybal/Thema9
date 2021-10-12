@@ -656,9 +656,10 @@ nona_copy <- nona_data
 
 nona_copy[1:8] <- lapply(nona_copy[1:8], factor) 
 str(nona_copy)
+nona_copy_scaled <- nona_copy
 
-index <- sapply(nona_copy, is.numeric)
-nona_copy[index] <- lapply(nona_copy[index], scale_min_max)
+index <- sapply(nona_copy_scaled, is.numeric)
+nona_copy_scaled[index] <- lapply(nona_copy_scaled[index], scale_min_max)
 
 #scaled_data <- as.data.frame(lapply(nona_copy, FUN=scale_min_max))
 #hist.data.frame(scaled_data)
@@ -676,8 +677,8 @@ Mutate_df <- function(data, last_wanted_column){
     #mutate_at(last_wanted_column, as.factor) %>%
     write.arff(file = paste0("data/scaled_data_", last_wanted_column, ".arff"))
 }
-Mutate_df(nona_copy, "tails")
-#Mutate_df(nona_copy, "sterol.type")
+Mutate_df(nona_copy_scaled, "tails")
+Mutate_df(nona_copy_scaled, "sterol.type")
 #Mutate_df(nona_copy, "sterol.conc")
 
 ```
@@ -787,6 +788,9 @@ These aren't the result we where hoping for. It seems like there is no way of de
 
 ### Tails prediction
 
+#### Tails Test 1
+Testing a multitude of machine learning algorithms
+
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
 "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 -row-name-width 0 \
 -mean-width 2 -stddev-width 2 -sig-width 1 -count-width 0 -print-row-names -enum-col-names"\
@@ -812,7 +816,6 @@ R-data-frame & 37.81 & 82.28 & $\circ$ & 82.39 & $\circ$ & 77.83 & $\circ$ & 81.
 \end{tabular} \footnotesize \par}
 \end{table}
 
-
 \begin{table}[thb]
 \caption{\label{Keys}Accuracy tails prediction (Key)}
 \scriptsize
@@ -827,6 +830,103 @@ R-data-frame & 37.81 & 82.28 & $\circ$ & 82.39 & $\circ$ & 77.83 & $\circ$ & 81.
 (7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
 (8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
 (9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+The results can be found in table 12, the keys/commands for every algorithm can be found in table 13. It looks like RandomForest and LMT score very high. Lets set RandomForest as our base now to compare which is significantly better.
+
+
+#### Test 2
+Testing the best algortithms in ensemble learners 
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
+"weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 2 -col-name-width 0 \
+-row-name-width 0 -mean-width 0 -stddev-width 0 -sig-width 0 -count-width 0 -print-row-names \
+-enum-col-names"\
+Analysing:  Percent_correct\
+Datasets:   1\
+Resultsets: 9\
+Confidence: 0.05 (two tailed)\
+Sorted by:  -\
+Date:       12-10-21 12:48\
+
+
+\begin{table}[thb]
+\caption{\label{RF_Tails}Tails prediction, RandomForest as base of t test}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (6)& (1) & & (2) & & (3) & & (4) & & (5) & & (7) & & (8) & & (9) & \\
+\hline
+R-data-frame & 99.47 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$ & 77.83 & $\bullet$ & 81.03 & $\bullet$ & 79.71 & $\bullet$ & 99.42 &         & 99.94 & $\circ$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[thb]
+\caption{\label{RF_Tails_keys}Tails prediction, RandomForest base (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & rules.ZeroR '' 48055541465867954 \\
+(2) & rules.OneR '-B 50' -3459427003147861443 \\
+(3) & lazy.IBk '-K 100 -W 0 -A \textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash"\textbackslash"' -3080186098777067172 \\
+(4) & bayes.NaiveBayes '' 5995231201785697655 \\
+(5) & trees.J48 '-C 0.25 -M 200' -217733168393644444 \\
+(6) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
+(8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
+(9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+Table 14 shows that RandomForest is significantly better than most of the algorithms. However, LMT is significantly better, and SimpleLogistic isn't significantly better nor significantly worse. Even though LMT seems to be the best at the moment, I don't think I'll use it. This is for the simple reason that I do not have enough knowledge on the algorithm to understand how it works, which means I do not have enough confidence in using it.
+
+#### Enseble Learning \
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
+"weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 \
+-row-name-width 0 -mean-width 0 -stddev-width 0 -sig-width 0 -count-width 0 -print-row-names \
+-enum-col-names"\
+Analysing:  Percent_correct\
+Datasets:   1\
+Resultsets: 6\
+Confidence: 0.05 (two tailed)\
+Sorted by:  -\
+Date:       12-10-21 14:41\
+
+
+\begin{table}[thb]
+\caption{\label{Ens_tails}Ensemble learning tails prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & & (3) & & (4) & & (5) & & (6) & \\
+\hline
+R-data-frame & 99.47 & 99.41 &         & 99.69 &         & 94.41 & $\bullet$ & 99.29 &         & 99.48 &        \\
+\hline
+\multicolumn{12}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[thb]
+\caption{\label{Ens_tails_keys}Ensemoble learning tail prediction (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(2) & meta.Vote '-S 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"functions.SimpleLogistic -I 0 -M 500 -H 50 -W 0.0\textbackslash" -B \textbackslash"lazy.IBk -K 100 -W 0 -A \textbackslash\textbackslash\textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"\textbackslash\textbackslash\textbackslash"\textbackslash" -R AVG' -637891196294399624 \\
+(3) & meta.Stacking '-X 10 -M \textbackslash"trees.J48 -C 0.25 -M 2\textbackslash" -S 1 -num-slots 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"functions.SimpleLogistic -I 0 -M 500 -H 50 -W 0.0\textbackslash" -B \textbackslash"lazy.IBk -K 100 -W 0 -A \textbackslash\textbackslash\textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"\textbackslash\textbackslash\textbackslash"\textbackslash"' 5134738557155845452 \\
+(4) & meta.MultiClassClassifier '-M 0 -R 2.0 -S 1 -W functions.Logistic -- -R 1.0E-8 -M -1 -num-decimal-places 4' -3879602011542849141 \\
+(5) & meta.Bagging '-P 100 -S 1 -num-slots 1 -I 10 -W trees.RandomForest -- -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' -115879962237199703 \\
+(6) & meta.AdaBoostM1 '-P 100 -S 1 -I 10 -W trees.RandomForest -- -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' -1178107808933117974 \\
 \end{tabularx}
 }
 \end{table}
