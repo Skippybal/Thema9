@@ -1,0 +1,55 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.rules.OneR -B 200
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+bending:
+	< 0.05450166739724405	-> no
+	< 0.1006740335368575	-> chole
+	< 0.12475664551155699	-> ergo
+	< 0.2310268177397185	-> chole
+	>= 0.2310268177397185	-> ergo
+(1505/2690 instances correct)
+
+
+Time taken to build model: 0.02 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances        1491               55.4275 %
+Incorrectly Classified Instances      1199               44.5725 %
+Kappa statistic                          0.26  
+Mean absolute error                      0.2971
+Root mean squared error                  0.5451
+Relative absolute error                 72.6022 %
+Root relative squared error            120.5071 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,579    0,392    0,522      0,579    0,549      0,185    0,593     0,481     chole
+                 0,561    0,027    0,783      0,561    0,654      0,617    0,767     0,503     no
+                 0,527    0,346    0,534      0,527    0,531      0,182    0,591     0,485     ergo
+Weighted Avg.    0,554    0,319    0,565      0,554    0,556      0,246    0,618     0,486     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 662  33 448 |   a = chole
+  89 220  83 |   b = no
+ 518  28 609 |   c = ergo
+

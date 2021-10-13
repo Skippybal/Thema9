@@ -1,0 +1,66 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.J48 -C 0.25 -M 200
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    evaluate on training data
+
+=== Classifier model (full training set) ===
+
+J48 pruned tree
+------------------
+
+bending <= 0.054892: no (215.0/4.0)
+bending > 0.054892
+|   APL <= 0.499912
+|   |   bending <= 0.139443: no (241.0/124.0)
+|   |   bending > 0.139443: ergo (826.0/401.0)
+|   APL > 0.499912
+|   |   compress <= 0.0412: chole (500.0/175.0)
+|   |   compress > 0.0412: ergo (908.0/420.0)
+
+Number of Leaves  : 	5
+
+Size of the tree : 	9
+
+
+Time taken to build model: 0.03 seconds
+
+=== Evaluation on training set ===
+
+Time taken to test model on training data: 0 seconds
+
+=== Summary ===
+
+Correctly Classified Instances        1566               58.2156 %
+Incorrectly Classified Instances      1124               41.7844 %
+Kappa statistic                          0.3256
+Mean absolute error                      0.3231
+Root mean squared error                  0.402 
+Relative absolute error                 78.9534 %
+Root relative squared error             88.86   %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,284    0,113    0,650      0,284    0,396      0,218    0,668     0,547     chole
+                 0,837    0,056    0,719      0,837    0,774      0,734    0,955     0,793     no
+                 0,790    0,535    0,527      0,790    0,632      0,264    0,650     0,522     ergo
+Weighted Avg.    0,582    0,286    0,607      0,582    0,552      0,313    0,702     0,572     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 325  61 757 |   a = chole
+   0 328  64 |   b = no
+ 175  67 913 |   c = ergo
+

@@ -1,0 +1,93 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.bayes.NaiveBayes 
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    evaluate on training data
+
+=== Classifier model (full training set) ===
+
+Naive Bayes Classifier
+
+                 Class
+Attribute        chole      no    ergo
+                (0.42)  (0.15)  (0.43)
+=======================================
+APL
+  mean           0.5487  0.4273  0.5256
+  std. dev.      0.1822  0.2088  0.1904
+  weight sum       1143     392    1155
+  precision      0.0004  0.0004  0.0004
+
+thickness
+  mean           0.4368  0.4249  0.4607
+  std. dev.       0.202  0.2682  0.2114
+  weight sum       1143     392    1155
+  precision      0.0004  0.0004  0.0004
+
+bending
+  mean           0.1782  0.1064  0.1984
+  std. dev.      0.2014  0.1135  0.2122
+  weight sum       1143     392    1155
+  precision      0.0004  0.0004  0.0004
+
+tilt
+  mean           0.1252  0.1158  0.1454
+  std. dev.      0.1942  0.1716  0.2114
+  weight sum       1143     392    1155
+  precision      0.0004  0.0004  0.0004
+
+zorder
+  mean           0.3263  0.3266   0.354
+  std. dev.      0.2364  0.2978  0.2499
+  weight sum       1143     392    1155
+  precision      0.0004  0.0004  0.0004
+
+compress
+  mean           0.0837  0.1043  0.0887
+  std. dev.      0.1168  0.1699  0.1098
+  weight sum       1143     392    1155
+  precision      0.0004  0.0004  0.0004
+
+
+
+Time taken to build model: 0.01 seconds
+
+=== Evaluation on training set ===
+
+Time taken to test model on training data: 0.01 seconds
+
+=== Summary ===
+
+Correctly Classified Instances        1296               48.1784 %
+Incorrectly Classified Instances      1394               51.8216 %
+Kappa statistic                          0.1048
+Mean absolute error                      0.3828
+Root mean squared error                  0.4489
+Relative absolute error                 93.5207 %
+Root relative squared error             99.2378 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,752    0,690    0,446      0,752    0,560      0,067    0,581     0,512     chole
+                 0,115    0,001    0,938      0,115    0,205      0,302    0,954     0,731     no
+                 0,339    0,210    0,548      0,339    0,419      0,145    0,586     0,506     ergo
+Weighted Avg.    0,482    0,384    0,561      0,482    0,448      0,135    0,638     0,541     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 859   3 281 |   a = chole
+ 305  45  42 |   b = no
+ 763   0 392 |   c = ergo
+

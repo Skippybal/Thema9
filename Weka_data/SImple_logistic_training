@@ -1,0 +1,76 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.functions.SimpleLogistic -I 0 -M 500 -H 50 -W 0.0
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    evaluate on training data
+
+=== Classifier model (full training set) ===
+
+SimpleLogistic:
+
+Class chole :
+-7.86 + 
+[APL] * 9.66 +
+[thickness] * 6.48 +
+[bending] * 2.15 +
+[tilt] * -0.31
+
+Class no :
+20.1 + 
+[APL] * -24.7 +
+[thickness] * -16.71 +
+[bending] * -35.93 +
+[tilt] * 20.55 +
+[compress] * 2.29
+
+Class ergo :
+-7.71 + 
+[APL] * 9.17 +
+[thickness] * 7.06 +
+[bending] * 2.4  +
+[tilt] * -0.17 +
+[zorder] * -0.4 +
+[compress] * -0.69
+
+
+Time taken to build model: 0.5 seconds
+
+=== Evaluation on training set ===
+
+Time taken to test model on training data: 0.01 seconds
+
+=== Summary ===
+
+Correctly Classified Instances        1568               58.29   %
+Incorrectly Classified Instances      1122               41.71   %
+Kappa statistic                          0.3202
+Mean absolute error                      0.3201
+Root mean squared error                  0.3903
+Relative absolute error                 78.2012 %
+Root relative squared error             86.2719 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,570    0,404    0,511      0,570    0,539      0,165    0,646     0,511     chole
+                 0,957    0,005    0,969      0,957    0,963      0,956    0,996     0,955     no
+                 0,468    0,316    0,527      0,468    0,496      0,155    0,644     0,536     ergo
+Weighted Avg.    0,583    0,308    0,585      0,583    0,582      0,276    0,696     0,587     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 652   8 483 |   a = chole
+  15 375   2 |   b = no
+ 610   4 541 |   c = ergo
+

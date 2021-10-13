@@ -1,0 +1,101 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.functions.SMO -C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K "weka.classifiers.functions.supportVector.PolyKernel -E 1.0 -C 250007" -calibrator "weka.classifiers.functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4"
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+SMO
+
+Kernel used:
+  Linear Kernel: K(x,y) = <x,y>
+
+Classifier for classes: chole, no
+
+BinarySMO
+
+Machine linear: showing attribute weights, not support vectors.
+
+       -12.0889 * (normalized) APL
+ +      -7.5393 * (normalized) thickness
+ +      -9.5277 * (normalized) bending
+ +       3.2457 * (normalized) tilt
+ +       0.6929 * (normalized) zorder
+ +       1.3372 * (normalized) compress
+ +       9.2434
+
+Number of kernel evaluations: 82703 (64.132% cached)
+
+Classifier for classes: chole, ergo
+
+BinarySMO
+
+Machine linear: showing attribute weights, not support vectors.
+
+        -0.2627 * (normalized) APL
+ +      -0.1046 * (normalized) thickness
+ +       0.1834 * (normalized) bending
+ +       0.1501 * (normalized) tilt
+ +       0.1837 * (normalized) zorder
+ +      -0.2092 * (normalized) compress
+ +       0.174 
+
+Number of kernel evaluations: 241439 (57.252% cached)
+
+Classifier for classes: no, ergo
+
+BinarySMO
+
+Machine linear: showing attribute weights, not support vectors.
+
+        11.5329 * (normalized) APL
+ +       7.5329 * (normalized) thickness
+ +      11.4705 * (normalized) bending
+ +      -3.885  * (normalized) tilt
+ +      -1.132  * (normalized) zorder
+ +      -1.5575 * (normalized) compress
+ -       8.9891
+
+Number of kernel evaluations: 64984 (63.59% cached)
+
+
+
+Time taken to build model: 0.12 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances        1543               57.3606 %
+Incorrectly Classified Instances      1147               42.6394 %
+Kappa statistic                          0.3017
+Mean absolute error                      0.3214
+Root mean squared error                  0.4162
+Relative absolute error                 78.5161 %
+Root relative squared error             92.0041 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,531    0,390    0,502      0,531    0,516      0,140    0,605     0,484     chole
+                 0,875    0,007    0,953      0,875    0,912      0,899    0,944     0,868     no
+                 0,513    0,343    0,529      0,513    0,521      0,171    0,604     0,491     ergo
+Weighted Avg.    0,574    0,314    0,579      0,574    0,576      0,264    0,654     0,543     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 607   9 527 |   a = chole
+  49 343   0 |   b = no
+ 554   8 593 |   c = ergo
+

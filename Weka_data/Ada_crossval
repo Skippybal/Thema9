@@ -1,0 +1,281 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.meta.AdaBoostM1 -P 100 -S 1 -I 10 -W weka.classifiers.trees.DecisionStump
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+AdaBoostM1: Base classifiers and their weights: 
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : ergo
+bending is missing : ergo
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.013953488372093023	0.9813953488372092	0.004651162790697674	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.46060606060606063	0.07313131313131313	0.46626262626262627	
+bending is missing
+chole	no	ergo	
+0.42490706319702604	0.14572490706319702	0.42936802973977695	
+
+
+Weight: 0.03
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : chole
+bending is missing : chole
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.014366656726366991	0.9808444576981773	0.004788885575455664	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.4669866740291338	0.07414437543796051	0.4588689505329058	
+bending is missing
+chole	no	ergo	
+0.4313207547169783	0.14559126408183135	0.4230879812011904	
+
+
+Weight: 0.03
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : ergo
+bending is missing : ergo
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.014794314591549264	0.9802742472112677	0.004931438197183087	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.4595485633719427	0.07517904763515323	0.465272388992904	
+bending is missing
+chole	no	ergo	
+0.4249988016299394	0.14548938999823724	0.4295118083718233	
+
+
+Weight: 0.02
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : chole
+bending is missing : chole
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.015103697383295603	0.9798617368222726	0.005034565794431868	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.4640603340140103	0.0759171429031061	0.4600225230828836	
+bending is missing
+chole	no	ergo	
+0.4295339783576406	0.14543368413864027	0.4250323375037191	
+
+
+Weight: 0.01
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : ergo
+bending is missing : ergo
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.015325935928323035	0.979565418762236	0.005108645309441012	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.46035428841116416	0.0764421131777333	0.46320359841110237	
+bending is missing
+chole	no	ergo	
+0.42637299509901644	0.14540243395928787	0.42822457094169575	
+
+
+Weight: 0.01
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : chole
+bending is missing : chole
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.015484776719827717	0.9793536310402298	0.005161592239942572	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.4625981676626023	0.07681471070970491	0.4605871216276927	
+bending is missing
+chole	no	ergo	
+0.4286290787254467	0.14538439677816792	0.42598652449638535	
+
+
+Weight: 0.01
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : ergo
+bending is missing : ergo
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.015597902283498258	0.9792027969553357	0.005199300761166086	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.4607508208997098	0.07707876527490128	0.46217041382538887	
+bending is missing
+chole	no	ergo	
+0.4270507147438655	0.14537366880574762	0.42757561645038683	
+
+
+Weight: 0.01
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : chole
+bending is missing : chole
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.015678267317947164	0.9790956435760705	0.005226089105982388	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.46186824148057737	0.07726569798290835	0.46086606053651424	
+bending is missing
+chole	no	ergo	
+0.4281743497971296	0.14536709483910537	0.426458555363765	
+
+
+Weight: 0.0
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : ergo
+bending is missing : chole
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.015735257641798096	0.9790196564776025	0.005245085880599365	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.46094725870472475	0.07739793395649318	0.46165480733878217	
+bending is missing
+chole	no	ergo	
+0.4273867965496431	0.145362952025699	0.4272502514246578	
+
+
+Weight: 0.0
+
+Decision Stump
+
+Classifications
+
+bending <= 0.0551624383820971 : no
+bending > 0.0551624383820971 : chole
+bending is missing : chole
+
+Class distributions
+
+bending <= 0.0551624383820971
+chole	no	ergo	
+0.01577562117533127	0.9789658384328916	0.005258540391777091	
+bending > 0.0551624383820971
+chole	no	ergo	
+0.4615040650698574	0.07749142765118498	0.4610045072789576	
+bending is missing
+chole	no	ergo	
+0.42794673319196974	0.14536027559301246	0.42669299121501786	
+
+
+Weight: 0.0
+
+Number of performed Iterations: 10
+
+
+Time taken to build model: 0.09 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances        1364               50.7063 %
+Incorrectly Classified Instances      1326               49.2937 %
+Kappa statistic                          0.1693
+Mean absolute error                      0.4396
+Root mean squared error                  0.4664
+Relative absolute error                107.4146 %
+Root relative squared error            103.1094 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,000    0,000    ?          0,000    ?          ?        0,562     0,457     chole
+                 0,538    0,002    0,977      0,538    0,694      0,696    0,749     0,616     no
+                 0,998    0,861    0,466      0,998    0,635      0,251    0,565     0,463     ergo
+Weighted Avg.    0,507    0,370    ?          0,507    ?          ?        0,591     0,483     
+
+=== Confusion Matrix ===
+
+    a    b    c   <-- classified as
+    0    3 1140 |    a = chole
+    0  211  181 |    b = no
+    0    2 1153 |    c = ergo
+

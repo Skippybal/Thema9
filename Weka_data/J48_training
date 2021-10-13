@@ -1,0 +1,108 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.J48 -C 0.25 -M 2
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    evaluate on training data
+
+=== Classifier model (full training set) ===
+
+J48 pruned tree
+------------------
+
+bending <= 0.054892
+|   bending <= 0.029276
+|   |   APL <= 0.424787: chole (3.0)
+|   |   APL > 0.424787: no (5.0)
+|   bending > 0.029276: no (207.0/1.0)
+bending > 0.054892
+|   APL <= 0.072059: no (61.0)
+|   APL > 0.072059
+|   |   APL <= 0.499912
+|   |   |   bending <= 0.09339: no (86.0)
+|   |   |   bending > 0.09339
+|   |   |   |   bending <= 0.139443
+|   |   |   |   |   APL <= 0.375452: no (31.0)
+|   |   |   |   |   APL > 0.375452
+|   |   |   |   |   |   compress <= 0.049582: chole (20.0)
+|   |   |   |   |   |   compress > 0.049582: ergo (104.0/38.0)
+|   |   |   |   bending > 0.139443
+|   |   |   |   |   bending <= 0.16527
+|   |   |   |   |   |   thickness <= 0.508271
+|   |   |   |   |   |   |   compress <= 0.048175
+|   |   |   |   |   |   |   |   zorder <= 0.341192: ergo (2.0)
+|   |   |   |   |   |   |   |   zorder > 0.341192: chole (13.0/1.0)
+|   |   |   |   |   |   |   compress > 0.048175
+|   |   |   |   |   |   |   |   APL <= 0.396019: chole (2.0)
+|   |   |   |   |   |   |   |   APL > 0.396019: ergo (8.0)
+|   |   |   |   |   |   thickness > 0.508271: chole (27.0)
+|   |   |   |   |   bending > 0.16527
+|   |   |   |   |   |   compress <= 0.146237: ergo (539.0/205.0)
+|   |   |   |   |   |   compress > 0.146237: chole (174.0/81.0)
+|   |   APL > 0.499912
+|   |   |   bending <= 0.125731
+|   |   |   |   compress <= 0.0412: chole (487.0/175.0)
+|   |   |   |   compress > 0.0412
+|   |   |   |   |   bending <= 0.097968
+|   |   |   |   |   |   thickness <= 0.388547: ergo (552.0/260.0)
+|   |   |   |   |   |   thickness > 0.388547
+|   |   |   |   |   |   |   compress <= 0.058648: chole (20.0)
+|   |   |   |   |   |   |   compress > 0.058648
+|   |   |   |   |   |   |   |   tilt <= 0.047099: chole (5.0)
+|   |   |   |   |   |   |   |   tilt > 0.047099: ergo (16.0/6.0)
+|   |   |   |   |   bending > 0.097968: ergo (259.0/81.0)
+|   |   |   bending > 0.125731
+|   |   |   |   bending <= 0.192299
+|   |   |   |   |   compress <= 0.096145: chole (56.0)
+|   |   |   |   |   compress > 0.096145
+|   |   |   |   |   |   compress <= 0.103494: ergo (2.0)
+|   |   |   |   |   |   compress > 0.103494: chole (2.0)
+|   |   |   |   bending > 0.192299
+|   |   |   |   |   APL <= 0.505239: chole (3.0)
+|   |   |   |   |   APL > 0.505239: ergo (6.0)
+
+Number of Leaves  : 	26
+
+Size of the tree : 	51
+
+
+Time taken to build model: 0.09 seconds
+
+=== Evaluation on training set ===
+
+Time taken to test model on training data: 0.02 seconds
+
+=== Summary ===
+
+Correctly Classified Instances        1842               68.4758 %
+Incorrectly Classified Instances       848               31.5242 %
+Kappa statistic                          0.4858
+Mean absolute error                      0.2511
+Root mean squared error                  0.3543
+Relative absolute error                 61.3572 %
+Root relative squared error             78.3346 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,486    0,166    0,683      0,486    0,568      0,344    0,760     0,671     chole
+                 0,992    0,000    0,997      0,992    0,995      0,994    0,999     0,995     no
+                 0,777    0,384    0,603      0,777    0,680      0,391    0,760     0,633     ergo
+Weighted Avg.    0,685    0,236    0,695      0,685    0,678      0,459    0,795     0,702     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 555   0 588 |   a = chole
+   1 389   2 |   b = no
+ 256   1 898 |   c = ergo
+

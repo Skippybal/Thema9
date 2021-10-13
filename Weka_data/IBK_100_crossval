@@ -1,0 +1,50 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.lazy.IBk -K 100 -W 0 -A "weka.core.neighboursearch.LinearNNSearch -A \"weka.core.EuclideanDistance -R first-last\""
+Relation:     clean_data
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.type
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+IB1 instance-based classifier
+using 100 nearest neighbour(s) for classification
+
+
+Time taken to build model: 0 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances        1586               58.9591 %
+Incorrectly Classified Instances      1104               41.0409 %
+Kappa statistic                          0.3262
+Mean absolute error                      0.3292
+Root mean squared error                  0.3983
+Relative absolute error                 80.4435 %
+Root relative squared error             88.0586 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,556    0,365    0,530      0,556    0,542      0,190    0,682     0,576     chole
+                 0,875    0,001    0,991      0,875    0,930      0,921    0,999     0,989     no
+                 0,526    0,350    0,531      0,526    0,529      0,177    0,679     0,557     ergo
+Weighted Avg.    0,590    0,305    0,597      0,590    0,593      0,291    0,726     0,628     
+
+=== Confusion Matrix ===
+
+   a   b   c   <-- classified as
+ 635   3 505 |   a = chole
+  17 343  32 |   b = no
+ 547   0 608 |   c = ergo
+
