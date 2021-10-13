@@ -789,7 +789,7 @@ These aren't the result we where hoping for. It seems like there is no way of de
 ### Tails prediction
 
 #### Tails Test 1
-Testing a multitude of machine learning algorithms
+Testing a multitude of machine learning algorithms.
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
 "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 -row-name-width 0 \
@@ -838,7 +838,7 @@ The results can be found in table 12, the keys/commands for every algorithm can 
 
 
 #### Test 2
-Testing the best algortithms in ensemble learners 
+Testing the best algortithms in ensemble learners.
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
 "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 2 -col-name-width 0 \
@@ -887,7 +887,8 @@ R-data-frame & 99.47 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$
 
 Table 14 shows that RandomForest is significantly better than most of the algorithms. However, LMT is significantly better, and SimpleLogistic isn't significantly better nor significantly worse. Even though LMT seems to be the best at the moment, I don't think I'll use it. This is for the simple reason that I do not have enough knowledge on the algorithm to understand how it works, which means I do not have enough confidence in using it.
 
-#### Enseble Learning \
+#### Enseble Learning 
+Testing ensemble learning algorithms with the best scoring algorithms.\
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
 "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 \
@@ -930,6 +931,68 @@ R-data-frame & 99.47 & 99.41 &         & 99.69 &         & 94.41 & $\bullet$ & 9
 \end{tabularx}
 }
 \end{table}
+
+Here we look at the area under the curve for all of the algoritms to check for a difference, the results are shown in table 16. It uses the same algorithms/keys as in table 15.
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -V \
+-result-matrix "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 \
+-col-name-width 0 -row-name-width 0 -mean-width 0 -stddev-width 0 -sig-width 0 \
+-count-width 0 -show-stddev -print-row-names -enum-col-names"\
+Analysing:  Area_under_ROC\
+Datasets:   1\
+Resultsets: 6\
+Confidence: 0.05 (two tailed)\
+Sorted by:  -\
+Date:       13-10-21 13:39\
+
+
+\begin{table}[thb]
+\caption{\label{labelname}Table Caption}
+\scriptsize
+{\centering \begin{tabular}{lr@{\hspace{0cm}}c@{\hspace{0cm}}rr@{\hspace{0cm}}c@{\hspace{0cm}}r@{\hspace{0.1cm}}cr@{\hspace{0cm}}c@{\hspace{0cm}}r@{\hspace{0.1cm}}cr@{\hspace{0cm}}c@{\hspace{0cm}}r@{\hspace{0.1cm}}cr@{\hspace{0cm}}c@{\hspace{0cm}}r@{\hspace{0.1cm}}cr@{\hspace{0cm}}c@{\hspace{0cm}}r@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & \multicolumn{3}{c}{(1)}& \multicolumn{4}{c}{(2)} & \multicolumn{4}{c}{(3)} & \multicolumn{4}{c}{(4)} & \multicolumn{4}{c}{(5)} & \multicolumn{4}{c}{(6)} \\
+\hline
+R-data-frame & 1.00 & $\pm$ & 0 & 1.00 & $\pm$ & 0 &         & 1.00 & $\pm$ & 0 &         & 1.00 & $\pm$ & 0 &         & 1.00 & $\pm$ & 0 &         & 1.00 & $\pm$ & 0 &        \\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \scriptsize \par}
+\end{table}
+
+These results are quit weird. All of the AUC (Area Under the Curve) values are 1.00 with a standard deviation of 0. Which is quite interesting, seeing as the accuracy isn't 100%. This probably has to do with the fact that there are 5 different labels, of which some can be predicted with a 100% accuracy.
+
+#### ROC curve
+Here we'll plot the ROC curve of the RandomForest algorithm.
+```{r}
+#library(pROC)
+
+ROC_variable_maker <- function(filehandle){
+  open_file <- RWeka::read.arff(filehandle)
+  #print(head(open_file))
+  plot <- ggplot(open_file)+ 
+    geom_path(aes(x= `False Positive Rate`, y=`True Positive Rate`, color=Threshold)) +
+    scale_color_gradient2(low="orange", mid="mediumvioletred", high="purple", midpoint = 0.5) +
+    labs(title= "ROC curve",
+         x = "False Positive Rate (1-Specificity)",
+         y = "True Positive Rate (Sensitivity)") 
+  return(plot)
+  
+}
+
+ROC_creator <- function (filefolder){
+  files <- list.files(path=filefolder, pattern="*.arff", full.names=TRUE, recursive=FALSE)
+  #print(files)
+  plots <- lapply(files, ROC_variable_maker)
+  
+  n <- length(plots)
+  nCols <- floor(sqrt(n))
+  do.call("grid.arrange", c(plots, ncol= nCols))
+}
+
+ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
+```
+
 
 
 ## Temporary results
