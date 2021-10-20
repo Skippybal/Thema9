@@ -885,7 +885,7 @@ R-data-frame & 99.47 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$
 }
 \end{table}
 
-Table 14 shows that RandomForest is significantly better than most of the algorithms. However, LMT is significantly better, and SimpleLogistic isn't significantly better nor significantly worse. Even though LMT seems to be the best at the moment, I don't think I'll use it. This is for the simple reason that I do not have enough knowledge on the algorithm to understand how it works, which means I do not have enough confidence in using it.
+Table 14 shows that RandomForest is significantly better than most of the algorithms. However, LMT is significantly better, and SimpleLogistic isn't significantly better nor significantly worse. Even though LMT seems to be the best at the moment, I don't think I'll use it. This is for the simple reason that I do not have enough knowledge on the algorithm to understand how it works, which means I do not have enough confidence in using it. It's also understandable that RandomForest came does quite well, seeing as it is technically a form of ensemble learning.
 
 #### Enseble Learning 
 Testing ensemble learning algorithms with the best scoring algorithms.\
