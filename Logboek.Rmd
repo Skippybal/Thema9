@@ -645,6 +645,21 @@ kable(head(scaled_data), caption="Cleaned data") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
+## Min Max
+This is code to make a csv file containing the minimums and maximums of every column so that we can use it in the java wrapper.
+
+```{r Min Max data}
+columns <- c("APL", "thickness", "bending",
+             "tilt", "zorder","compress")
+
+min_max1 <- tibble("Column" = columns,
+                   "Min" = apply(nona_data[, columns], 2, min),
+                   "Max" = apply(nona_data[, columns], 2, max))
+write.csv(min_max1, "Min_Max/min_max", row.names = FALSE)
+```
+
+
+
 # Weka
 ## Rescaling data
 Here we rescale all of the possible labels to factors so when it is exported to a .arff file it will be encoded correctly.
@@ -918,7 +933,7 @@ R-data-frame & 99.47 & 99.41 &         & 99.69 &         & 94.41 & $\bullet$ & 9
 
 
 \begin{table}[thb]
-\caption{\label{Ens_tails_keys}Ensemoble learning tail prediction (Key)}
+\caption{\label{Ens_tails_keys}Ensemble learning tail prediction (Key)}
 \scriptsize
 {\centering
 \begin{tabularx}{\textwidth}{lX}\\
@@ -932,7 +947,7 @@ R-data-frame & 99.47 & 99.41 &         & 99.69 &         & 94.41 & $\bullet$ & 9
 }
 \end{table}
 
-Here we look at the area under the curve for all of the algoritms to check for a difference, the results are shown in table 16. It uses the same algorithms/keys as in table 15.
+Here we look at the area under the curve for all of the algoritms to check for a difference, the results are shown in table 16. It uses the same algorithms/keys as in table 15, also shown in table 17 for convenience.
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -V \
 -result-matrix "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 \
@@ -960,22 +975,37 @@ R-data-frame & 1.00 & $\pm$ & 0 & 1.00 & $\pm$ & 0 &         & 1.00 & $\pm$ & 0 
 \end{tabular} \scriptsize \par}
 \end{table}
 
-These results are quit weird. All of the AUC (Area Under the Curve) values are 1.00 with a standard deviation of 0. Which is quite interesting, seeing as the accuracy isn't 100%. This probably has to do with the fact that there are 5 different labels, of which some can be predicted with a 100% accuracy.
+These results are quit weird. All of the AUC (Area Under the Curve) values are 1.00 with a standard deviation of 0. Which is quite interesting, seeing as the accuracy isn't 100%. This probably has to do with the fact that there are 5 different labels, of which some can be predicted with a 100% accuracy. It probably chooses the first label as positive, which in this case would be DI, which indeed has an area under the curve of 1.
 
 #### ROC curve
 Here we'll plot the ROC curve of the RandomForest algorithm.
 ```{r}
 #library(pROC)
 
+AUC_calculator <- function(TPR, FPR){
+  dFPR <- c(diff(FPR), 0)
+  dTPR <- c(diff(TPR), 0)
+  abs(sum(TPR * dFPR) + sum(dTPR * dFPR)/2)
+}
+
 ROC_variable_maker <- function(filehandle){
   open_file <- RWeka::read.arff(filehandle)
+  AUC <- with(open_file, AUC_calculator(`True Positive Rate`, `False Positive Rate`))
   #print(head(open_file))
   plot <- ggplot(open_file)+ 
-    geom_path(aes(x= `False Positive Rate`, y=`True Positive Rate`, color=Threshold)) +
-    scale_color_gradient2(low="orange", mid="mediumvioletred", high="purple", midpoint = 0.5) +
-    labs(title= "ROC curve",
+    geom_path(aes(x=`False Positive Rate`,
+                  y=`True Positive Rate`,
+                  color=Threshold)) +
+    scale_color_gradient2(low="orange", mid="mediumvioletred",
+                          high="purple", midpoint = 0.5) +
+    labs(title= paste("ROC curve, AUC: ", round(AUC, 6)),
          x = "False Positive Rate (1-Specificity)",
-         y = "True Positive Rate (Sensitivity)") 
+         y = "True Positive Rate (Sensitivity)") + 
+    theme(plot.title = element_text(size=10),
+          axis.title.x=element_text(size=9),
+          axis.title.y=element_text(size=7),   
+          legend.title = element_text(size = 8),
+          legend.text = element_text(size = 6))
   return(plot)
   
 }
@@ -992,7 +1022,107 @@ ROC_creator <- function (filefolder){
 
 ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
 ```
+All of the ROC curves look extremely good seeing as it's basically they are all at what is basically a right angle. We can also see this in the area under the curve, which is close to one for all for all of the different labels.
 
+### Sterol concentration prediction
+This section will be a bit less extensive than the tails prediction because of certain time restraints.
+The keys are again the exact same ones shown in table 10  because the same experiment was used.
+
+
+#### Experiment 1
+These are the results of running the experiment 1 configuration on the dataset with sterol concentration on as the last column.
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
+"weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 -row-name-width 0 \
+-mean-width 0 -stddev-width 0 -sig-width 0 -count-width 0 -print-row-names -enum-col-names" \
+Analysing:  Percent_correct \
+Datasets:   1 \
+Resultsets: 9 \
+Confidence: 0.05 (two tailed) \
+Sorted by:  - \
+Date:       10/23/21, 2:29 PM \
+
+
+\begin{table}[thb]
+\caption{\label{sterol_con_pred}Sterol concentration prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (9)& (1) & & (2) & & (3) & & (4) & & (5) & & (6) & & (7) & & (8) & \\
+\hline
+R-data-frame & 99.94 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$ & 77.83 & $\bullet$ & 81.03 & $\bullet$ & 99.47 & $\bullet$ & 79.71 & $\bullet$ & 99.42 & $\bullet$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+\begin{table}[thb]
+\caption{\label{sterol_con_pred_key}Sterol concentration prediction accuracy (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & rules.ZeroR '' 48055541465867954 \\
+(2) & rules.OneR '-B 50' -3459427003147861443 \\
+(3) & lazy.IBk '-K 100 -W 0 -A \textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash"\textbackslash"' -3080186098777067172 \\
+(4) & bayes.NaiveBayes '' 5995231201785697655 \\
+(5) & trees.J48 '-C 0.25 -M 200' -217733168393644444 \\
+(6) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
+(8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
+(9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+Looking at table 18, it seems like the LMT tree gives significantly better results then any of the other models. Let's take a look whether or not we can get some sort of improvements with ensemble learning. Here I will use the LMT tree, seeing as I now have a better understanding of it due to some papers. However, due to time restraints, I am unable to redo all of the experiments for the tails prediction and make a new model.
+
+#### Ensemble learners (Experiment 4)
+Here are the results of making ensemble learners using the best performing algorithms.
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 \
+-result-matrix "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 \
+-col-name-width 0 -row-name-width 0 -mean-width 0 -stddev-width 0 -sig-width 0 \
+-count-width 0 -print-row-names -enum-col-names" \
+Analysing:  Percent_correct \
+Datasets:   1 \
+Resultsets: 6 \
+Confidence: 0.05 (two tailed) \
+Sorted by:  - \
+Date:       10/23/21, 7:29 PM \
+
+
+\begin{table}[thb]
+\caption{\label{Ens_Ste_conc}Ensemble learning sterol concentration prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & & (3) & & (4) & & (5) & & (6) & \\
+\hline
+R-data-frame & 99.73 & 99.64 &         & 99.80 &         & 99.70 &         & 99.72 &         & 36.69 & $\bullet$\\
+\hline
+\multicolumn{12}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[thb]
+\caption{\label{Ens_Ste_conc_keys}Ensemble learning sterol concentration prediction accuracy (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+(2) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(3) & meta.Vote '-S 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"trees.LMT -I -1 -M 15 -W 0.0\textbackslash" -B \textbackslash"functions.SMO -C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash\textbackslash\textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash\textbackslash\textbackslash" -calibrator \textbackslash\textbackslash\textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash\textbackslash\textbackslash"\textbackslash" -R AVG' -637891196294399624 \\
+(4) & meta.Stacking '-X 10 -M \textbackslash"trees.J48 -C 0.25 -M 2\textbackslash" -S 1 -num-slots 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"trees.LMT -I -1 -M 15 -W 0.0\textbackslash" -B \textbackslash"functions.SMO -C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash\textbackslash\textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash\textbackslash\textbackslash" -calibrator \textbackslash\textbackslash\textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash\textbackslash\textbackslash"\textbackslash"' 5134738557155845452 \\
+(5) & meta.Bagging '-P 100 -S 1 -num-slots 1 -I 10 -W trees.LMT -- -I -1 -M 15 -W 0.0' -115879962237199703 \\
+(6) & meta.AdaBoostM1 '-P 100 -S 1 -I 10 -W trees.DecisionStump' -1178107808933117974 \\
+\end{tabularx}
+}
+\end{table}
+
+Now this is where stuff gets really interesting. The results of the experiment can be found in table 21, the keys for the experiment can be found in table 22. No algorithm is significantly better than just LMT, except for adaboost, which preforms horrendously bad. But now, for some reason, it also shows that RandomForest does not actually perform significantly worse than LMT. These result are contradictory to what we found in the previous experiment.
 
 
 ## Temporary results
@@ -1004,3 +1134,11 @@ After running a multitude of test in weka to try and make a model to predict ste
 I need to make this very clear.
 The EDA was made with a specific question in mind. This probably exposed the exploration steps to an subconscious bias when making plots and exploring relations between variables.
 
+
+# Sources
+
+https://link.springer.com/content/pdf/10.1007/s10994-005-0466-3.pdf
+
+Czub, J., & Baginski, M. (2006). Comparative molecular dynamics study of lipid membranes containing cholesterol and ergosterol. Biophysical journal, 90(7), 2368-2382.
+
+Hung, W. C., Lee, M. T., Chung, H., Sun, Y. T., Chen, H., Charron, N. E., & Huang, H. W. (2016). Comparative study of the condensing effects of ergosterol and cholesterol. Biophysical journal, 110(9), 2026-2033.
