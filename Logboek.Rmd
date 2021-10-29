@@ -32,6 +32,7 @@ library(ggcorrplot)
 library(reshape2)
 library(e1071) 
 library(Hmisc)
+library(forcats)
 ```
 
 <!-- * Copyright (c) 2018 Kasper Notebomer. -->
@@ -682,7 +683,7 @@ nona_copy_scaled[index] <- lapply(nona_copy_scaled[index], scale_min_max)
 ```
 
 
-Here is a function to put a specific column as the last column for the encoding in the .arff file. Some of the code is commented out so it won't create a lot of datasets that take up memory.
+Here is a function to put a specific column as the last column for the encoding in the .arff file.
 ```{r MakeLast}
 library(RWeka)
 Mutate_df <- function(data, last_wanted_column){
@@ -694,7 +695,7 @@ Mutate_df <- function(data, last_wanted_column){
 }
 Mutate_df(nona_copy_scaled, "tails")
 Mutate_df(nona_copy_scaled, "sterol.type")
-#Mutate_df(nona_copy, "sterol.conc")
+Mutate_df(nona_copy_scaled, "sterol.conc")
 
 ```
 
@@ -800,6 +801,64 @@ In table \ref{table:sterol_accuracy} we can see the results of specific machine 
 \end{tabular}
 \end{center}
 \end{table}
+
+Here we'll do some quick recoding of the sterol column, and run random forest to see the results. The newly generated dataset will consist of one that has the no sterol column removed and one were ergosterol and cholesterol are recoded to "Present". The data structure will be printed as a way of verifying whether or not everything right.
+
+```{r Sterol recoding}
+Mutate_df2 <- function(data, last_wanted_column, removed){
+  data %>%
+    relocate(all_of(last_wanted_column), .after = last_col()) %>%
+    select(tail(names(.), 7)) %>%
+    #mutate_at(last_wanted_column, as.factor) %>%
+    write.arff(file = paste0("data/scaled_data_recoded_", last_wanted_column, removed, ".arff"))
+}
+
+Sterol_present <- nona_copy_scaled
+names(Sterol_present)[names(Sterol_present) == "sterol.type"] <- "sterol.present"
+Sterol_present$sterol.present <- Sterol_present$sterol.present %>% fct_collapse(yes = c("ergo","chole"))
+Sterol_no_removed <- filter(nona_copy_scaled, `sterol.type` != "no")
+
+str(Sterol_present)
+str(Sterol_no_removed)
+
+Mutate_df2(Sterol_present, "sterol.present", "")
+Mutate_df2(Sterol_no_removed, "sterol.type", "_removed_no")
+```
+
+Everything seems to have gone right with the encoding. Now lets run experiment 1 again on the new files. Before running the experiment the \@relation in both files were changed to "Sterol_Present" in scaled_data_recoded_sterol.present.arff and "Removed_No" in scaled_data_recoded_sterol.type_removed_no.arff. This is because the write.arff function does not correctly give a name to the given file. The relation argument also doesn't seem to work correctly.
+
+
+Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05\
+-result-matrix "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 2\
+-col-name-width 0 -row-name-width 0 -mean-width 0 -stddev-width 0 -sig-width 0\
+-count-width 0 -print-row-names -enum-col-names"\
+Analysing:  Percent_correct\
+Datasets:   2\
+Resultsets: 9\
+Confidence: 0.05 (two tailed)\
+Sorted by:  -\
+Date:       10/29/21, 5:10 PM\
+
+
+\begin{table}[thb]
+\caption{\label{table:recode_sterol}Recoded sterol type prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (6)& (1) & & (2) & & (3) & & (4) & & (5) & & (7) & & (8) & & (9) & \\
+\hline
+Sterol-Present & 99.75 & 85.43 & $\bullet$ & 93.36 & $\bullet$ & 92.93 & $\bullet$ & 86.91 & $\bullet$ & 92.78 & $\bullet$ & 90.35 & $\bullet$ & 98.99 & $\bullet$ & 99.94 &        \\
+Removed-No & 53.30 & 50.26 & $\bullet$ & 55.67 &           & 55.06 &           & 53.88 &           & 57.31 &   $\circ$ & 51.43 &           & 52.90 &           & 57.54 & $\circ$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+After the recording we find that we can get a staggering 99.75% percent accuracy when predicting whether or not a sterol is present in the membrane using the RandomForest algorithm. But then when looking at specifically distinguishing between ergosterol and cholesterol we only get a measly 57.54% accuracy as the highest accuracy. These results are visible in \ref{table:recode_sterol, the keys are the same as we saw in \ref{table:recode_sterol}.
+What we have inadvertently done here is created evidence to support the theory that there in no significant difference in the effect of cholesterol compared to ergosterol on membrane characteristics. We could choose to pursue this even further, but that isn't really the goal of this project. 
+Because of these findings I have decided to use the RandomForest algorithm, seeing as is it significantly better than every other algorithm except for LMT. I will use the model that predicts whether or not a sterol is present in the membrane, and not what specific sterol it is. This is because as we could see in the results, predicting the specific sterol type in a membrane gives absolutely awful results. There is however, one big drawback to this. This being that the dataset now contains 2298 instances with a sterol present and only 392 that don't contain a sterol in the membrane.
 
 ### Tails prediction
 
@@ -1123,7 +1182,26 @@ R-data-frame & 99.94 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$
 }
 \end{table}
 
-Looking at table \ref{table:sterol_con_pred}, it seems like the LMT tree gives significantly better results then any of the other models. Let's take a look whether or not we can get some sort of improvements with ensemble learning. Here I will use the LMT tree, seeing as I now have a better understanding of it due to some papers. However, due to time restraints, I am unable to redo all of the experiments for the tails prediction and make a new model.
+Looking at table \ref{table:sterol_con_pred}, it seems like the LMT tree gives significantly better results then any of the other models. Let's take a look whether or not we can get some sort of improvements with ensemble learning. Here I will use the LMT tree, seeing as I now have a better understanding of it due to some papers. However, due to time restraints, I am unable to redo all of the experiments for the tails prediction and make a new model. 
+It is also important to note that the minimum number of instances was set to 100 in a separate run to try and prevent overfitting. Funnily enough, this didn't change the accuracy of the model at all. The model at a minimum number of instances is the exact same as the one at 100. The model also doesn't seem to be overfitted at 15 seeing as these results are from 10 fold cross-validation and the tree doesn't look to complex. The resulting tree is printed below to illustrate that the tree is indeed not very complex, which would be a sign of overfitting.
+
+=== Classifier model (full training set) ===
+
+Logistic model tree 
+------------------
+
+bending <= 0.054892: LM_1:116/232 (215)
+bending > 0.054892
+|   thickness <= 0.894825
+|   |   compress <= 0.089242
+|   |   |   APL <= 0.578692: LM_2:116/580 (894)
+|   |   |   APL > 0.578692: LM_3:116/580 (1029)
+|   |   compress > 0.089242: LM_4:116/464 (384)
+|   thickness > 0.894825: LM_5:116/348 (168)
+
+Number of Leaves  : 	5
+
+Size of the Tree : 	9
 
 #### Ensemble learners (Experiment 4)
 Here are the results of making ensemble learners using the best performing algorithms.
