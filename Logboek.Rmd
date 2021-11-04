@@ -1,5 +1,5 @@
 ---
-title: "Logboek"
+title: "Logbook"
 author: "Kasper Notebomer"
 date: "9/14/2021"
 output:

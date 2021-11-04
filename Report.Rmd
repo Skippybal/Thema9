@@ -1,5 +1,5 @@
 ---
-title: "Results & Discussion/Conclusion"
+title: "Membrane composition prediction using machine learning"
 author: "Kasper Notebomer"
 date: "10/2/2021"
 output:
