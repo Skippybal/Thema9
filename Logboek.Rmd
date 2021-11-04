@@ -717,7 +717,10 @@ The speed of the algorithm isn't of the utmost importance, we would rather have 
 
 ## Output
 
+Some of the subsections are named experiment followed by a number. This is because this name corrosponds to the file where the experiment settings can be found to rerun the experiment in weka. The experiment setups can be found in the Experiment folder. Experiment 1 can be found in the Experiment.exp file.
+
 ### Sterol prediction
+The dataset used in this section can be found under data/scaled_data_sterol.type.arff.
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
 "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 -col-name-width 0 -row-name-width 0 \
@@ -810,12 +813,15 @@ Mutate_df2 <- function(data, last_wanted_column, removed){
     relocate(all_of(last_wanted_column), .after = last_col()) %>%
     select(tail(names(.), 7)) %>%
     #mutate_at(last_wanted_column, as.factor) %>%
-    write.arff(file = paste0("data/scaled_data_recoded_", last_wanted_column, removed, ".arff"))
+    write.arff(file = paste0("data/scaled_data_recoded_",
+                             last_wanted_column, removed,
+                             ".arff"))
 }
 
 Sterol_present <- nona_copy_scaled
 names(Sterol_present)[names(Sterol_present) == "sterol.type"] <- "sterol.present"
-Sterol_present$sterol.present <- Sterol_present$sterol.present %>% fct_collapse(yes = c("ergo","chole"))
+Sterol_present$sterol.present <- Sterol_present$sterol.present %>% 
+  fct_collapse(yes = c("ergo","chole"))
 Sterol_no_removed <- filter(nona_copy_scaled, `sterol.type` != "no")
 
 str(Sterol_present)
@@ -861,8 +867,10 @@ What we have inadvertently done here is created evidence to support the theory t
 Because of these findings I have decided to use the RandomForest algorithm, seeing as is it significantly better than every other algorithm except for LMT. I will use the model that predicts whether or not a sterol is present in the membrane, and not what specific sterol it is. This is because as we could see in the results, predicting the specific sterol type in a membrane gives absolutely awful results. There is however, one big drawback to this. This being that the dataset now contains 2298 instances with a sterol present and only 392 that don't contain a sterol in the membrane.
 
 ### Tails prediction
+The dataset used in this section can be found under data/scaled_data_tails.arff.
 
-#### Tails Test 1
+
+#### Experiment 1
 Testing a multitude of machine learning algorithms.
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
@@ -911,7 +919,7 @@ R-data-frame & 37.81 & 82.28 & $\circ$ & 82.39 & $\circ$ & 77.83 & $\circ$ & 81.
 The results can be found in table \ref{table:tails_Accuracy}, the keys/commands for every algorithm can be found in table \ref{table:tails_keys}. It looks like RandomForest and LMT score very high. Lets set RandomForest as our base now to compare which is significantly better.
 
 
-#### Test 2
+#### Experiment 2
 Testing the best algortithms in ensemble learners.
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
@@ -961,7 +969,7 @@ R-data-frame & 99.47 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$
 
 Table \ref{table:RF_Tails} shows that RandomForest is significantly better than most of the algorithms. However, LMT is significantly better, and SimpleLogistic isn't significantly better nor significantly worse. Even though LMT seems to be the best at the moment, I don't think I'll use it. This is for the simple reason that I do not have enough knowledge on the algorithm to understand how it works, which means I do not have enough confidence in using it. It's also understandable that RandomForest came does quite well, seeing as it is technically a form of ensemble learning.
 
-#### Enseble Learning 
+#### Enseble Learning (Experiment 4)
 Testing ensemble learning algorithms with the best scoring algorithms.\
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
@@ -1037,7 +1045,7 @@ R-data-frame & 1.00 & $\pm$ & 0 & 1.00 & $\pm$ & 0 &         & 1.00 & $\pm$ & 0 
 
 These results shown in table \ref{table:AUC_tai} are quit weird. All of the AUC (Area Under the Curve) values are 1.00 with a standard deviation of 0. Which is quite interesting, seeing as the accuracy isn't 100%. This probably has to do with the fact that there are 5 different labels, of which some can be predicted with a 100% accuracy. It probably chooses the first label as positive, which in this case would be DI, which indeed has an area under the curve of 1.
 
-#### Attribute selection
+#### Attribute selection (Experiment 3)
 These are the result of attribute selection on the random forest algorithm.
 
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 \
@@ -1134,6 +1142,7 @@ All of the ROC curves look extremely good seeing as it's basically they are all 
 ### Sterol concentration prediction
 This section will be a bit less extensive than the tails prediction because of certain time restraints.
 The keys are again the exact same ones shown in table 10  because the same experiment was used.
+The dataset used in this section can be found under data/scaled_data_sterol.conc.arff.
 
 
 #### Experiment 1
@@ -1188,16 +1197,15 @@ It is also important to note that the minimum number of instances was set to 100
 === Classifier model (full training set) ===
 
 Logistic model tree 
-------------------
 
-bending <= 0.054892: LM_1:116/232 (215)
-bending > 0.054892
-|   thickness <= 0.894825
-|   |   compress <= 0.089242
-|   |   |   APL <= 0.578692: LM_2:116/580 (894)
-|   |   |   APL > 0.578692: LM_3:116/580 (1029)
-|   |   compress > 0.089242: LM_4:116/464 (384)
-|   thickness > 0.894825: LM_5:116/348 (168)
+bending <= 0.054892: LM_1:116/232 (215)  
+bending > 0.054892  
+|   thickness <= 0.894825  
+|   |   compress <= 0.089242  
+|   |   |   APL <= 0.578692: LM_2:116/580 (894)  
+|   |   |   APL > 0.578692: LM_3:116/580 (1029)  
+|   |   compress > 0.089242: LM_4:116/464 (384)  
+|   thickness > 0.894825: LM_5:116/348 (168)  
 
 Number of Leaves  : 	5
 
@@ -1255,7 +1263,7 @@ Now this is where stuff gets really interesting. The results of the experiment c
 After running a multitude of test in weka to try and make a model to predict sterol type, I found something quite interesting. It seems that it is almost impossible to predict the sterol type in a membrane. By this I mean it is very hard to distinguish between ergosterol and cholesterol. It is however completely possible to predict whether or not there is a sterol present in the membrane. After running some test with the all of the instances with no sterol removed we see that almost every algorithm go's to 50% accuracy, meaning it's basically as good as zeroR. Even when using voting with OneR, ZeroR, RandomForest, J48, NaiveBayes, SimpleLogistic and SMO, we still only get 55.7006 % correctly classified instances (with the no sterol group removed). This gives us an interesting conclusion to the temporary research question. No, it is not possible to predict the sterol in a membrane given certain measurements. It is however possible to distinguish between no sterol and a sterol. This leads me to conclude that there is just very little to no difference between ergosterol and cholesterol, seeing as when testing to predict the sterol concentration we get a 99.1297% using the voting of the same algorithms as used on sterol type (again on the data with instances with no sterol removed), and only given the measurements.
 
 ## A word on attribute selection
-The attribute selection algorithms that can be used in weka all take very long to complete. Some results of attribute selection on the final algorithms can be fournd in the Experiments/Results_Explorer folder. However due to time restraints I could not test all of these algorithm on statistical significance. However, for the final program this doesn't really matter seeing as in the results we can see that for every algorithm different attributes where chosen. But when looking at the attributes needed to run all three algorithm we would still need all of the attributes. This means that for our java wrapper it doesn't really matter. However, if I deicide that I want the wrapper to be able to only predict specific membrane components, then these models would probably be better. This is due to the fact that gathering the values for the given attributes isn't an easy task, so less attributes would definitely be better in that case.
+The attribute selection algorithms that can be used in weka all take very long to complete. Some results of attribute selection on the final algorithms can be fournd in the Experiments/Results_Explorer folder. However due to time restraints I could not test all of these algorithm on statistical significance. However, for the final program this doesn't really matter seeing as in the results we can see that for every algorithm different attributes where chosen. But when looking at the attributes needed to run all three algorithm we would still need all of the attributes. This means that for our java wrapper it doesn't really matter. However, if I decide that I want the wrapper to be able to only predict specific membrane components, then these models would probably be better. This is due to the fact that gathering the values for the given attributes isn't an easy task, so less attributes would definitely be better in that case.
 
 
 # EDA Discussion
