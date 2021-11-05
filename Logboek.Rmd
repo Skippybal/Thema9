@@ -717,7 +717,7 @@ The speed of the algorithm isn't of the utmost importance, we would rather have 
 
 ## Output
 
-Some of the subsections are named experiment followed by a number. This is because this name corrosponds to the file where the experiment settings can be found to rerun the experiment in weka. The experiment setups can be found in the Experiment folder. Experiment 1 can be found in the Experiment.exp file.
+Some of the subsections are named experiment followed by a number. This is because this name corresponds to the file where the experiment settings can be found to rerun the experiment in weka. The experiment setups can be found in the Experiment folder. Experiment 1 can be found in the Experiment.exp file.
 
 ### Sterol prediction
 The dataset used in this section can be found under data/scaled_data_sterol.type.arff.
@@ -862,7 +862,7 @@ Removed-No & 53.30 & 50.26 & $\bullet$ & 55.67 &           & 55.06 &           &
 \end{table}
 
 
-After the recording we find that we can get a staggering 99.75% percent accuracy when predicting whether or not a sterol is present in the membrane using the RandomForest algorithm. But then when looking at specifically distinguishing between ergosterol and cholesterol we only get a measly 57.54% accuracy as the highest accuracy. These results are visible in \ref{table:recode_sterol, the keys are the same as we saw in \ref{table:recode_sterol}.
+After the recording we find that we can get a staggering 99.75% percent accuracy when predicting whether or not a sterol is present in the membrane using the RandomForest algorithm. But then when looking at specifically distinguishing between ergosterol and cholesterol we only get a measly 57.54% accuracy as the highest accuracy. These results are visible in \ref{table:recode_sterol}, the keys are the same as we saw in \ref{table:recode_sterol}.
 What we have inadvertently done here is created evidence to support the theory that there in no significant difference in the effect of cholesterol compared to ergosterol on membrane characteristics. We could choose to pursue this even further, but that isn't really the goal of this project. 
 Because of these findings I have decided to use the RandomForest algorithm, seeing as is it significantly better than every other algorithm except for LMT. I will use the model that predicts whether or not a sterol is present in the membrane, and not what specific sterol it is. This is because as we could see in the results, predicting the specific sterol type in a membrane gives absolutely awful results. There is however, one big drawback to this. This being that the dataset now contains 2298 instances with a sterol present and only 392 that don't contain a sterol in the membrane.
 
