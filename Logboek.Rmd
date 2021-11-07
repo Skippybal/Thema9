@@ -1,5 +1,5 @@
 ---
-title: "Logbook"
+title: "Membrane composition prediction using machine learning, Logbook"
 author: "Kasper Notebomer"
 date: "9/14/2021"
 output:
@@ -919,9 +919,6 @@ R-data-frame & 37.81 & 82.28 & $\circ$ & 82.39 & $\circ$ & 77.83 & $\circ$ & 81.
 The results can be found in table \ref{table:tails_Accuracy}, the keys/commands for every algorithm can be found in table \ref{table:tails_keys}. It looks like RandomForest and LMT score very high. Lets set RandomForest as our base now to compare which is significantly better.
 
 
-#### Experiment 2
-Testing the best algortithms in ensemble learners.
-
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -result-matrix \
 "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 2 -col-name-width 0 \
 -row-name-width 0 -mean-width 0 -stddev-width 0 -sig-width 0 -count-width 0 -print-row-names \
@@ -1014,9 +1011,10 @@ R-data-frame & 99.47 & 99.41 &         & 99.69 &         & 94.41 & $\bullet$ & 9
 }
 \end{table}
 
-Here we look at the area under the curve for all of the algoritms to check for a difference, the results are shown in table\ref{table:Ens_tails}. It uses the same algorithms/keys as in table \ref{table:RF_Tails_keys}, also shown in table \ref{table:Ens_tails_keys} for convenience.
+Here we look at the area under the curve for all of the algoritms to check for a difference, the results are shown in table \ref{table:Ens_tails}. It uses the same algorithms/keys as in table \ref{table:RF_Tails_keys}, also shown in table \ref{table:Ens_tails_keys} for convenience.
 
 These are the results for the area under the curve for the same experiment.
+
 Tester:     weka.experiment.PairedCorrectedTTester -G 4,5,6 -D 1 -R 2 -S 0.05 -V \
 -result-matrix "weka.experiment.ResultMatrixLatex -mean-prec 2 -stddev-prec 0 \
 -col-name-width 0 -row-name-width 0 -mean-width 0 -stddev-width 0 -sig-width 0 \
@@ -1043,7 +1041,7 @@ R-data-frame & 1.00 & $\pm$ & 0 & 1.00 & $\pm$ & 0 &         & 1.00 & $\pm$ & 0 
 \end{tabular} \scriptsize \par}
 \end{table}
 
-These results shown in table \ref{table:AUC_tai} are quit weird. All of the AUC (Area Under the Curve) values are 1.00 with a standard deviation of 0. Which is quite interesting, seeing as the accuracy isn't 100%. This probably has to do with the fact that there are 5 different labels, of which some can be predicted with a 100% accuracy. It probably chooses the first label as positive, which in this case would be DI, which indeed has an area under the curve of 1.
+These results shown in table \ref{table:AUC_tail} are quit weird. All of the AUC (Area Under the Curve) values are 1.00 with a standard deviation of 0. Which is quite interesting, seeing as the accuracy isn't 100%. This probably has to do with the fact that there are 5 different labels, of which some can be predicted with a 100% accuracy. It probably chooses the first label as positive, which in this case would be DI, which indeed has an area under the curve of 1.
 
 #### Attribute selection (Experiment 3)
 These are the result of attribute selection on the random forest algorithm.
@@ -1137,7 +1135,7 @@ ROC_creator <- function (filefolder){
 
 ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
 ```
-All of the ROC curves look extremely good seeing as it's basically they are all at what is basically a right angle. We can also see this in the area under the curve, which is close to one for all for all of the different labels.
+All of the ROC curves look extremely good seeing as they are all at what is basically a right angle. We can also see this in the area under the curve, which is close to one for all for all of the different labels.
 
 ### Sterol concentration prediction
 This section will be a bit less extensive than the tails prediction because of certain time restraints.
