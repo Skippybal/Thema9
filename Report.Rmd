@@ -74,7 +74,7 @@ The main goals of the EDA where to give insight into the data, and to prepare th
 # Introduction
 ## Objective
 The aim of this research is to try and find a way to predict membrane composition given the characteristics. This is done with the use of machine learning algorithms. The found model can then be made into an application that can easily predict the membrane composition when given specific membrane characteristics as input by the user. This leads to the following research question: "Is it possible to predict membrane composition based on membrane characteristics, with a high degree of accuracy, using machine learning?". The H0 hypothesis is as follows: It is possible to predict membrane composition with membrane characteristics. 
-To answer the research question thoroughly, the question was split up into three sub questions: "Is it possible to predict the sterol present in a membrane based on membrane characteristics?", "Is it possible to tails present in the lipids of a membrane given the membrane characteristics?" and "Is is possible to predict the sterol concentration of a membrane given the membrane characteristics?".
+To answer the research question thoroughly, the question was split up into three sub questions: "Is it possible to predict the sterol that is present in a membrane based on the membrane's characteristics?", "Is it possible to aliphatic tails that are present in the lipids of a membrane given the membrane characteristics?" and "Is is possible to predict the sterol concentration of a membrane given the membrane characteristics?".
 
 ## Theory
 In some research it is necessary or interesting to create a membrane that has specific characteristics, like a specific area per lipid or bending rigidity. However, due to the many different possible combinations of membrane components, creating a specific membrane can be quite a daunting task. There is a lot of research that shows what kind of an effect certain components have on a membranes characteristics, but there isn't really anything that tries to predict what components are present in a membrane, given the characteristics. A problem like this is most likely solvable using a combination of machine learning algorithms. Machine learning algorithms are algorithms that get more accurate as they are exposed to more data. A few examples of machine learning algorithms are Naive Bayes, RandomForest and LMT [@landwehr2005logistic].
@@ -85,7 +85,7 @@ In some research it is necessary or interesting to create a membrane that has sp
 The code used for this research can be found at the following repository: [https://github.com/Skippybal/Thema9](https://github.com/Skippybal/Thema9). The application that was made using this research can be found at: [https://github.com/Skippybal/Project-Actaeon](https://github.com/Skippybal/Project-Actaeon).
 
 ## Materials
-The dataset that was used contains data on membrane composition and characteristics. The data was provided by Tsjerk Wassenaar of the RuG. The dataset is, at the time of writing, not publicly available. The data set also does not have a publication linked to it. There is no paper linked to the dataset and there was little information given in general. In the dataset 14 different variables where recorded and in there where 2843 instances recorded in total. The recorded varaibles are: temperature, sterol type, sterol concentration, Other (phospho)lipids in membrane, aliphatic tails, saturation index, phosphatidyl choline concentration, ethanol concentration, area per lipit (APL), thickness, bending regidity, tilt angle, zorder and compressibility. Some of these variabels are considered paramaters, this means that they are meant to be the labels in machine learning. The parameters are: Temperature, Sterol type, Sterol concentration, Other (phospho)lipids in membrane, Aliphatic tails, Saturation index, Phosphatidyl choline concentration and Ethanol concentration. This means that the other variables should be used to predict one or multiple of the paramaters.
+The dataset that was used contains data on membrane composition and characteristics. The data was provided by Tsjerk Wassenaar of the RuG. The dataset is, at the time of writing, not publicly available. The data set also does not have a publication linked to it. There is no paper linked to the dataset and there was little information given in general. In the dataset 14 different variables where recorded and there where 2843 instances recorded in total. The recorded varaibles are: temperature, sterol type, sterol concentration, other (phospho)lipids in membrane, aliphatic tails, saturation index, phosphatidyl choline concentration, ethanol concentration, area per lipit (APL), thickness, bending regidity, tilt angle, zorder and compressibility. Some of these variabels are considered paramaters, this means that they are meant to be the labels in machine learning. The parameters are: Temperature, Sterol type, Sterol concentration, Other (phospho)lipids in membrane, Aliphatic tails, Saturation index, Phosphatidyl choline concentration and Ethanol concentration. This means that the other variables should be used to predict one or multiple of the parameters.
 
 Any kind of data manipulation and the explanatory data analysis phase where done in the R programming language [@R-base]. The machine learning experiments where done using the Weka software [@Weka].
 
@@ -93,13 +93,13 @@ Any kind of data manipulation and the explanatory data analysis phase where done
 The machine learning experiments where done in Weka. A lot of different algorithms where tested against each other on whether or not their accuracy was significantly better then other algorithms. This was done using a t-test with a p-value of 0.05. The algorithms that where tested include, but aren't limited to: Naive Bayes, J48, SMO, Simple Logisic, ZeroR, OneR, RandomForest and LMT. Some of there algorithms where also used in certain forms of ensemble learning like stacking, boosting and voting.
 
 ## Developed methods
-A resutlt form this research is the program that can be found at: [https://github.com/Skippybal/Project-Actaeon](https://github.com/Skippybal/Project-Actaeon). This repo contains a program, written in java, that can predict the tails, sterol presensce and sterol concentration when given membrane characteristics. The program is a wrapper for the Weka models created by this research. The input is are the following variables: area per lipit (APL), thickness, bending regidity, tilt angle, zorder and compressibility.
+A resutlt form this research is the program that can be found at: [https://github.com/Skippybal/Project-Actaeon](https://github.com/Skippybal/Project-Actaeon). This repo contains a program, written in java, that can predict the tails, sterol presensce and sterol concentration when given a membrane's characteristics. The program is a wrapper for the Weka models created by this research. The input for the program consists of the following variables: area per lipit (APL), thickness, bending regidity, tilt angle, zorder and compressibility.
 
 
 \newpage
 # Results
 
-The results are divided into two different subsection: data exploration, data cleaning and machine learning. This is all of these sections have different goals and are both major subject of discussion. The code for both the data exploration steps and the data cleaning can be found in appendix A. All of the abbreviation are explained in the codebook, shown in appendix B.
+The results are divided into two different subsection: data exploration, data cleaning and machine learning. This is because all of these sections have different goals and are major subject of discussion. The code for both the data exploration steps and the data cleaning can be found in appendix A. All of the abbreviation are explained in the codebook, shown in appendix B.
 
 ## Data exploration
 
@@ -120,8 +120,8 @@ kable(sum, caption="Five number summary of the original dataset") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
 
-Table 1 shows the five number summary of all of the numerical columns that are present in the dataset. Inspecting this table closely, a deviation in the mean and the median of some of the columns can be observed. This is an indication that our data might be skewed. This is an important observation, seeing as some algorithms expect the data to have a Gaussian(normal) distribution. The results of calculating exact skew of all of the numeric columns can be found in table 2. The table shows that there is indeed a moderate (|Skew|> 0.5) to heavy skew (|Skew| > 1.0) in almost every column.
-Another thing to take note of in table 1 is the extremely high maximum values of the bending and the tilt columns. This tells us that there are probably some outliers in these columns. To confirm this a boxplot is made, the results of this are shown in figure 0.
+Table 1 shows the five number summary of all of the numerical columns that are present in the dataset. Inspecting this table closely, a deviation in the mean and the median of some of the columns can be observed. This is an indication that our data might be skewed. This is an important observation, seeing as some algorithms expect the data to have a Gaussian(normal) distribution. The results of calculating the exact skew of all of the numeric columns can be found in table 2. The table shows that there is indeed a moderate (|Skew|> 0.5) to heavy skew (|Skew| > 1.0) in almost every column.
+Another thing to take note of in table 1 is the extremely high maximum values of the bending and the tilt columns. This tells us that there are probably some outliers in these columns. To confirm this, a boxplot is made. The results of this are shown in figure 1.
 
 ```{r Skew, echo=FALSE}
 # Calculate the skew on every column
@@ -156,16 +156,22 @@ plot2 <- nona_data %>%
   ggplot(aes(x = Variable, y = Value)) +
   geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
 
-ggarrange(plot1, plot2,
-          labels = c("A", "B"),
-          ncol = 2, nrow = 1)
+plot3 <- nona_data %>% 
+  select("APL") %>%
+  pivot_longer(., cols = c("APL"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+ggarrange(plot1, plot2, plot3,
+          labels = c("A", "B", "C"),
+          ncol = 3, nrow = 1)
 ```
 
-The results of plotting some variables and coloring them based on certain class variables can be seen in figure \ref{fig:Density}. These density plots are made to look whether or not it might by possible to distinguish between class variables based on one specific variable.
+The results of plotting some variables and coloring them based on certain class variables can be seen in figure \ref{fig:Density}. These density plots are made to see whether or not it might by possible to distinguish between class variables based on one specific variable.
 
 Plot A in figure \ref{fig:Density} show that there is basically no distinction between cholesterol and ergosterol based on the bending rigidity. However, distinguishing between no sterol or a sterol does seem to be possible based on the bending rigidity seeing as the peaks of these classes only overlaps a small bit. There does seem to be an odd peak in the no sterol class at around 50 kB/t bending rigidity.
 
-In plot B it looks like there is no way of distinguishing different types of sterol based on the area per lipid, seeing as the peaks are basically in the same place. But just to be certain we'll still plot in against some other variables to make sure, seeing as it might be a very useful variable when paired with something like bending rigidity.
+In plot B it looks like there is no way of distinguishing different types of sterol based on the area per lipid, seeing as the peaks are basically in the same place. But just to be certain we'll still plot it against some other variables to make sure, seeing as it might be a very useful variable when paired with something like bending rigidity.
 The results depicted in plot C also don't look very promising seeing as every peak is around the same place again.
 Plot D on the other hand seems a lot more interesting seeing as all of the peaks are in slightly different locations, the DO, PO and the PI seem to overlap a lot but the DP and DI tails seem to have little overlap with the rest. It seems like APL could possibly be used as a variable to distinguish between aliphatic tails when paired with another variable.
 
@@ -207,7 +213,7 @@ plots <- ggarrange(p, p2, p3, p4,
 plots
 ```
 
-```{r APL Bending plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="\\label{fig:APLBending} Correlation between APL and bending regidty, (B) includes a loess regresison line"}
+```{r APL Bending plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="\\label{fig:APLBending} Correlation between APL and bending regidty, (B) includes a loess regresison line", fig.height = 4, fig.width = 7}
 #Plot APL against bending rigidity
 chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) + 
   geom_point(alpha=1/10, size=0.5) + 
@@ -232,10 +238,11 @@ plots
 
 An interesting correlation that was found in the data exploration is shown in figure \ref{fig:APLBending}. It shows that there is an inverse logarithmic correlation between the area per lipid of a membrane and the bending rigidity. An even more interesting observation is the fact that, when colored on sterol type, it shows that there is a big difference between the no sterol group and the other two groups. This means that this ratio could be very important in the prediction of sterol type based on the membrane characteristics. It does however seem like these variables aren't useful when it comes to discerning between ergosterol and cholesterol.
 
+\newpage
 The results of plotting the compressibility of the membrane against the bending rigidity can be found in figure \ref{fig:bendingcompress}. 
 In plot A of figure \ref{fig:bendingcompress} we can't really make out much of a pattern in the dense clout to the left, but when looking at the rest of the data points there does seem to be some grouping based on whether or not no sterol or a sterol is present. When zooming in in plot B it shows the same kind of grouping happen again based on whether there is a sterol present or not. Something else that figure \ref{fig:bendingcompress} shows it that a log transformation on the compressibility variable might be in order seeing as there are a lot of point in the magnitude of tens but also a lot in the hundreds.
 
-```{r bending compress plot, warning=FALSE, echo=FALSE, fig.cap="\\label{fig:bendingcompress} Correlation between bending rigidity and compressibility depending on the sterol type"}
+```{r bending compress plot, warning=FALSE, echo=FALSE, fig.cap="\\label{fig:bendingcompress} Correlation between bending rigidity and compressibility depending on the sterol type", fig.height = 4, fig.width = 7}
 # Create plot
 chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
   geom_point(alpha=2/10, size=0.5) +
@@ -281,7 +288,7 @@ In figure \ref{fig:aplbending} the area per lipid is again plotted against the b
 The results shown in figure \ref{fig:aplbending} show an interesting pattern. It seems that a specific saturation index is only found in membranes within a specific range of area per lipid and bending rigidity. This is shown by the fact that there seem to be little clusters of color that have formed in the graph. A saturation index of zero and two seem to be the most well defined, seeing as these clusters are basically separate from the other saturation indexes. The saturation indexes of zero point five and one on the other hand seem to have a lot of overlap between them. All of this means that area per lipid to bending rigidity ratio could also be promising in classifying the saturation index of a membrane.
 
 
-```{r APl against bending saturation, echo=FALSE, fig.cap="\\label{fig:aplbending} Correlation between APL and bending regidity based on the sterol type and saturation index"}
+```{r APl against bending saturation, echo=FALSE, fig.cap="\\label{fig:aplbending} Correlation between APL and bending regidity based on the sterol type and saturation index", fig.height = 4, fig.width = 7}
 # Create plots
 chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
   geom_jitter(alpha=0.1, size=0.5) +  
@@ -300,14 +307,15 @@ plots <- ggarrange(chart,
 plots
 ```
 
-To look for correlation between the variables and clustering a PCA plot was made. This plot is shown in figure \ref{fig:pca1}.
+\newpage
+To look for correlation between the variables and to look for clustering a PCA plot was made. This plot is shown in figure \ref{fig:pca1}.
 
 Plot A in figure \ref{fig:pca1} shows something that is quite strange. It states that over 80% of the variance can be explained by the first principle component, this is quite odd. Plot B shows that some of the variables seem to be highly correlated like z order and thickness just like tilt angle and bending rigidity seeing as their arrows are pointing in the same direction. Area per lipid(APL) on the other hand seems to be negatively correlated to z order and thickness.
 When looking at plot C there doesn't seem to be any obvious form of clustering, if any, for that matter.
 
 All of the results from the data exploration led to the following research question: Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given certain measurements like the bending rigidity, the are per lipid and the compressibility?
 
-```{r PCA1, echo=FALSE, warning=FALSE, fig.cap="\\label{fig:pca1} Clustering of samples"}
+```{r PCA1, echo=FALSE, warning=FALSE, fig.cap="\\label{fig:pca1} Clustering of samples", fig.height = 5, fig.width = 7}
 # Create PCA plot
 res.pca <- prcomp(correlation, scale = TRUE)
 plot1 <- fviz_eig(res.pca) + 
@@ -337,7 +345,7 @@ plot <- as_ggplot(plot) +
 plot
 ```
 
-
+\newpage
 ## Data cleaning
 
 To make the dataset usable for machine learning it had to be cleaned up using various of methods. The difference between the cleaned dataset and the original dataset can be seen when comparing table 3 and table 4. Unused columns like temperature and ethanol concentration where removed. All of the data in the columns was scaled using min max normalization. This is visible in table 4, seeing as the values now range from zero to one. NA's where also omitted. It was decided not to remove any variables based on a high degree of correlation. Table 4 doesn't have all of the variables that table 3 has. This is because the variables that where removed would be seen as labels from a machine learning point of view. Seeing as this research is interested in only one of the labels, sterol type, the others where removed.
@@ -365,20 +373,336 @@ kable(sum, caption="Five number summary of the cleaned dataset") %>%
   kable_styling(latex_options = c("hold_position"), full_width = TRUE)
 ```
 
+\newpage
 ## Machine learning
-The dataset for every machine learning experiment was manipulated in such a way that the column containing the label was put as the last column of the dataset. The first few columns where always: area per lipit (APL), thickness, bending regidity, tilt angle, zorder and compressibility. In that order.
+The dataset for every machine learning experiment was manipulated in such a way that the column containing the label was put as the last column of the dataset. The first few columns where always: area per lipit (APL), thickness, bending regidity, tilt angle, zorder and compressibility. In that order. All of the experiments where done with a p-value of 0.05.
 
 ### Sterol type
+
+\begin{table}[!thbp]
+\caption{\label{table:sterol_accuracy}Sterol prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & & (3) & & (4) & & (5) & & (6) & & (7) & & (8) & & (9) & \\
+\hline
+R-data-frame & 42.94 & 56.65 & $\circ$ & 59.51 & $\circ$ & 47.83 & $\circ$ & 57.30 & $\circ$ & 60.20 & $\circ$ & 57.07 & $\circ$ & 58.03 & $\circ$ & 70.03 & $\circ$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[!thbp]
+\caption{\label{table:sterol_keys}Sterol prediction accuracy (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & rules.ZeroR '' 48055541465867954 \\
+(2) & rules.OneR '-B 50' -3459427003147861443 \\
+(3) & lazy.IBk '-K 100 -W 0 -A \textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash"\textbackslash"' -3080186098777067172 \\
+(4) & bayes.NaiveBayes '' 5995231201785697655 \\
+(5) & trees.J48 '-C 0.25 -M 200' -217733168393644444 \\
+(6) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
+(8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
+(9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+Table \ref{table:sterol_accuracy} shows the results of some basic machine learning models in predicting the sterol type of a give membrane, the settings for every algorithm can be found in table \ref{table:sterol_keys}. The highest accuracy that is achieved is equal to 70.03%. Table \ref{table:RandomForest_confus} shows a more in depth view of the accuracy per label for the RandomForest and the SimpleLogitc model, in the form of a confusion matrix. This table shows something quite interesting, it seems like the the reason for the low accuracy is the distinction between ergosterol and cholesterol. This leads to the idea that machine learning algorithms are capable of predicing whether or not a sterol is present in the given membrane, but aren't able to discern between ergosterol and cholesterol. This coincides with the previous findings in the [Data exploration] section.
+
+
+\begin{table}[!thbp]
+\caption{\label{table:RandomForest_confus}Confusion matrix from RandomForest and SimpleLogistics, sterol type}
+\begin{center}
+\begin{tabular}{lll}
+\begin{tabular}[c]{ c c c|p{3cm} }
+ \hline
+ \multicolumn{4}{ c }{RandomForest}\\
+ \hline
+ a & b & c & <-- classified as \\ 
+ \hline
+ 608 & 535 & 0 & a = chole \\  
+ \hline
+ 261 & 893 & 1 & b = ergo \\
+ \hline
+ 1 & 4 & 387 & c = no \\
+ \hline
+\end{tabular}
+&
+\begin{tabular}[c]{ c c c|p{3cm} }
+ \hline
+ \multicolumn{4}{ c }{SimpleLogistics}\\
+ \hline
+ a & b & c & <-- classified as \\ 
+ \hline
+ 624 & 511 & 8 & a = chole \\  
+ \hline
+ 585 & 564 & 6 & b = ergo \\
+ \hline
+ 18 & 2 & 372 & c = no \\
+ \hline
+\end{tabular}
+\end{tabular}
+\end{center}
+\end{table}
+
+
+\begin{table}[!thbp]
+\caption{\label{table:recode_sterol}Recoded sterol type prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (6)& (1) & & (2) & & (3) & & (4) & & (5) & & (7) & & (8) & & (9) & \\
+\hline
+Sterol-Present & 99.75 & 85.43 & $\bullet$ & 93.36 & $\bullet$ & 92.93 & $\bullet$ & 86.91 & $\bullet$ & 92.78 & $\bullet$ & 90.35 & $\bullet$ & 98.99 & $\bullet$ & 99.94 &        \\
+Removed-No & 53.30 & 50.26 & $\bullet$ & 55.67 &           & 55.06 &           & 53.88 &           & 57.31 &   $\circ$ & 51.43 &           & 52.90 &           & 57.54 & $\circ$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+After recoding the sterol type column in the dataset, and running the same experiment, the accuracy went up to 99.75% in the dataset where ergosterol and cholesterol where grouped together (Sterol_Present dataset). It does seem like machine learning isn't able to discern between ergosterol and cholesterol. Seeing as in the dataset where the no sterol present instances where removed (Removed-no dataset), the highest achieved accuracy is a measly 57.54%. The results of these experiments are depicted in table \ref{table:recode_sterol}. The settings for this experiment are the same as the ones shows in table \ref{table:sterol_keys}
+
+From the gathered results it seems like RandomForest is the most suitable algorithm to use for predicting whether or not there is a sterol present in a given membrane. The gathered results also seem to support the theory that there is no significant difference between the effect of ergosterol and cholesterol on membrance characteristics. Or at least, not one that can be found by the used machine learning algorithms.
+
+
 ### Aliphatic tails
+
+\begin{table}[!thbp]
+\caption{\label{table:RF_Tails}Tails prediction, RandomForest as base of t test}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (6)& (1) & & (2) & & (3) & & (4) & & (5) & & (7) & & (8) & & (9) & \\
+\hline
+R-data-frame & 99.47 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$ & 77.83 & $\bullet$ & 81.03 & $\bullet$ & 79.71 & $\bullet$ & 99.42 &         & 99.94 & $\circ$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[!thbp]
+\caption{\label{table:RF_Tails_keys}Tails prediction, RandomForest base (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & rules.ZeroR '' 48055541465867954 \\
+(2) & rules.OneR '-B 50' -3459427003147861443 \\
+(3) & lazy.IBk '-K 100 -W 0 -A \textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash"\textbackslash"' -3080186098777067172 \\
+(4) & bayes.NaiveBayes '' 5995231201785697655 \\
+(5) & trees.J48 '-C 0.25 -M 200' -217733168393644444 \\
+(6) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
+(8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
+(9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+RandomForest, with an accuracy of 99.47%, seems to be the one of the most accurate algorithm for predicting aliphatic tails when looking at table \ref{table:RF_Tails}. The only algorithm that preforms significantly better is the LMT algorithm with a 99.94% accuracy. The fact that RandomForest is one of the more accurate models is not unexpected seeing as RandomForest is technically an ensemble learner. The keys/settings for the experiment from table \ref{table:RF_Tails} can be found in table \ref{table:RF_Tails_keys}.
+
+
+Table \ref{table:Ens_tails} depicts the accuracy of multiple ensemble learners compared to the RandomForest algorithm. The keys for this experiment can be found in \ref{table:Ens_tails_keys}. None of the ensemble learners are significantly better at predicting aliphatic tails than RandomForest. The MultiClassClassifier algorithm is the only algorithm that preforms significantly worse.
+
+
+\begin{table}[!thbp]
+\caption{\label{table:Ens_tails}Ensemble learning tails prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & & (3) & & (4) & & (5) & & (6) & \\
+\hline
+R-data-frame & 99.47 & 99.41 &         & 99.69 &         & 94.41 & $\bullet$ & 99.29 &         & 99.48 &        \\
+\hline
+\multicolumn{12}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[!thbp]
+\caption{\label{table:Ens_tails_keys}Ensemble learning tail prediction (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(2) & meta.Vote '-S 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"functions.SimpleLogistic -I 0 -M 500 -H 50 -W 0.0\textbackslash" -B \textbackslash"lazy.IBk -K 100 -W 0 -A \textbackslash\textbackslash\textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"\textbackslash\textbackslash\textbackslash"\textbackslash" -R AVG' -637891196294399624 \\
+(3) & meta.Stacking '-X 10 -M \textbackslash"trees.J48 -C 0.25 -M 2\textbackslash" -S 1 -num-slots 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"functions.SimpleLogistic -I 0 -M 500 -H 50 -W 0.0\textbackslash" -B \textbackslash"lazy.IBk -K 100 -W 0 -A \textbackslash\textbackslash\textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash\textbackslash"\textbackslash\textbackslash\textbackslash"\textbackslash"' 5134738557155845452 \\
+(4) & meta.MultiClassClassifier '-M 0 -R 2.0 -S 1 -W functions.Logistic -- -R 1.0E-8 -M -1 -num-decimal-places 4' -3879602011542849141 \\
+(5) & meta.Bagging '-P 100 -S 1 -num-slots 1 -I 10 -W trees.RandomForest -- -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' -115879962237199703 \\
+(6) & meta.AdaBoostM1 '-P 100 -S 1 -I 10 -W trees.RandomForest -- -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' -1178107808933117974 \\
+\end{tabularx}
+}
+\end{table}
+
+Table \ref{table:att_ac} shows that attribute selection doesn't make a significant difference in results, the keys for this experiment can be found in table \ref{table:att_ac_key}. This would lead to the conclusion that it is probably best to run the model with less attributes, seeing as less input is usually better. However, for and application that needs to predict multiple components of a membrane, for the purpose of creating a membrane with specific characteristics, it won't actually be that useful. This is because every component in a membrane leads to differences in different characteristics. This means that to predicts every component of the membrane, all of the wanted characteristics are probably necessary, seeing as different attributes will be needed for different models to predict different components.
+
+\begin{table}[!thbp]
+\caption{\label{table:att_ac}Attribute selection aliphatic tails accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & \\
+\hline
+R-data-frame & 99.47 & 99.54 &        \\
+\hline
+\multicolumn{4}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[!thbp]
+\caption{\label{table:att_ac_key}Attribute selection aliphatic tails accuracy (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(2) & meta.AttributeSelectedClassifier '-E \textbackslash"WrapperSubsetEval -B trees.RandomForest -F 5 -T 0.01 -R 1 -E DEFAULT -- -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -S \textbackslash"BestFirst -D 1 -N 5\textbackslash" -W trees.RandomForest -- -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' -1151805453487947577 \\
+\end{tabularx}
+}
+\end{table}
+
+
+```{r ROC_Tails, echo=FALSE, fig.cap="\\label{fig:roc_tails} Performence mesurement of the RandomForest algorithm using an ROC curve",fig_caption=TRUE}
+#library(pROC)
+
+AUC_calculator <- function(TPR, FPR){
+  dFPR <- c(diff(FPR), 0)
+  dTPR <- c(diff(TPR), 0)
+  abs(sum(TPR * dFPR) + sum(dTPR * dFPR)/2)
+}
+
+ROC_variable_maker <- function(filehandle){
+  open_file <- RWeka::read.arff(filehandle)
+  AUC <- with(open_file, AUC_calculator(`True Positive Rate`, `False Positive Rate`))
+  #print(head(open_file))
+  plot <- ggplot(open_file)+ 
+    geom_path(aes(x=`False Positive Rate`,
+                  y=`True Positive Rate`,
+                  color=Threshold)) +
+    scale_color_gradient2(low="orange", mid="mediumvioletred",
+                          high="purple", midpoint = 0.5) +
+    labs(title= paste("ROC curve, AUC: ", round(AUC, 6)),
+         x = "False Positive Rate (1-Specificity)",
+         y = "True Positive Rate (Sensitivity)") + 
+    theme(plot.title = element_text(size=10),
+          axis.title.x=element_text(size=9),
+          axis.title.y=element_text(size=7),   
+          legend.title = element_text(size = 8),
+          legend.text = element_text(size = 6))
+  return(plot)
+  
+}
+
+ROC_creator <- function (filefolder){
+  files <- list.files(path=filefolder, pattern="*.arff", full.names=TRUE, recursive=FALSE)
+  #print(files)
+  plots <- lapply(files, ROC_variable_maker)
+  return(plots)
+  
+  # n <- length(plots)
+  # nCols <- floor(sqrt(n))
+  # do.call("grid.arrange", c(plots, ncol= nCols))
+}
+
+plots <- ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
+
+n <- length(plots)
+nCols <- floor(sqrt(n))
+#do.call("grid.arrange", c(plots, ncol= nCols))
+grid.arrange(grobs = plots)
+# ggarrange(plotlist=plots)
+```
+
+Figure \ref{fig:roc_tails} shows the ROC curve for the RandomForest algorithm for every possible label in the aliphatic tails prediction. Looking at the ROC curves, the RandomForest algorithm seems to preform extremely well seeing as the ROC curves are all basically at right angles. Another metric to measure how well the algorithm preforms is the area under the curve (AUC). All of the ROC curves plotted in table \ref{fig:roc_tails} have an AUC of over 0.99, which is extremely good.
+From these results it seems like the RandomForest algorithm is suitable for the task of predicting the aliphatic tails present in a membrane when given the membrane's characteristics.
+
+
 ### Sterol concentration
 
+It seems like the LMT algorithm is the most accurate in predicting sterol concentration when looking at table \ref{table:sterol_con_pred}. The keys for this experiment can be found in \ref{table:sterol_con_pred_key}. The LMT algorithm has a very high accuracy of 99.94%, which is significantly higher than any of the other algorithms. It seems unlikely that ensemble learning will improve on the LMT algorithm.
+
+\begin{table}[!thbp]
+\caption{\label{table:sterol_con_pred}Sterol concentration prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (9)& (1) & & (2) & & (3) & & (4) & & (5) & & (6) & & (7) & & (8) & \\
+\hline
+R-data-frame & 99.94 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$ & 77.83 & $\bullet$ & 81.03 & $\bullet$ & 99.47 & $\bullet$ & 79.71 & $\bullet$ & 99.42 & $\bullet$\\
+\hline
+\multicolumn{18}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+\begin{table}[!thbp]
+\caption{\label{table:sterol_con_pred_key}Sterol concentration prediction accuracy (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & rules.ZeroR '' 48055541465867954 \\
+(2) & rules.OneR '-B 50' -3459427003147861443 \\
+(3) & lazy.IBk '-K 100 -W 0 -A \textbackslash"weka.core.neighboursearch.LinearNNSearch -A \textbackslash\textbackslash\textbackslash"weka.core.EuclideanDistance -R first-last\textbackslash\textbackslash\textbackslash"\textbackslash"' -3080186098777067172 \\
+(4) & bayes.NaiveBayes '' 5995231201785697655 \\
+(5) & trees.J48 '-C 0.25 -M 200' -217733168393644444 \\
+(6) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(7) & functions.SMO '-C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash" -calibrator \textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash"' -6585883636378691736 \\
+(8) & functions.SimpleLogistic '-I 0 -M 500 -H 50 -W 0.0' 7397710626304705059 \\
+(9) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+\end{tabularx}
+}
+\end{table}
+
+Table \ref{table:Ens_Ste_conc} shows that ensamble learning does not improve accuracy in predicting sterol concentration. All of the ensemble learners aren't significantly worse or better, except for adaboost. Adaboost is the only algorithm that preforms significanlty worse. The keys belonging to the experiment shown in table \ref{table:Ens_Ste_conc} can be found in table \ref{table:Ens_Ste_conc_keys}
+
+\begin{table}[!thbp]
+\caption{\label{table:Ens_Ste_conc}Ensemble learning sterol concentration prediction accuracy}
+\footnotesize
+{\centering \begin{tabular}{lrr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}cr@{\hspace{0.1cm}}c}
+\\
+\hline
+Dataset & (1)& (2) & & (3) & & (4) & & (5) & & (6) & \\
+\hline
+R-data-frame & 99.73 & 99.64 &         & 99.80 &         & 99.70 &         & 99.72 &         & 36.69 & $\bullet$\\
+\hline
+\multicolumn{12}{c}{$\circ$, $\bullet$ statistically significant improvement or degradation}\\
+\end{tabular} \footnotesize \par}
+\end{table}
+
+
+\begin{table}[!thbp]
+\caption{\label{table:Ens_Ste_conc_keys}Ensemble learning sterol concentration prediction accuracy (Key)}
+\scriptsize
+{\centering
+\begin{tabularx}{\textwidth}{lX}\\
+(1) & trees.LMT '-I -1 -M 15 -W 0.0' -1113212459618104943 \\
+(2) & trees.RandomForest '-P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1' 1116839470751428698 \\
+(3) & meta.Vote '-S 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"trees.LMT -I -1 -M 15 -W 0.0\textbackslash" -B \textbackslash"functions.SMO -C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash\textbackslash\textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash\textbackslash\textbackslash" -calibrator \textbackslash\textbackslash\textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash\textbackslash\textbackslash"\textbackslash" -R AVG' -637891196294399624 \\
+(4) & meta.Stacking '-X 10 -M \textbackslash"trees.J48 -C 0.25 -M 2\textbackslash" -S 1 -num-slots 1 -B \textbackslash"trees.RandomForest -P 100 -I 100 -num-slots 1 -K 0 -M 1.0 -V 0.001 -S 1\textbackslash" -B \textbackslash"trees.LMT -I -1 -M 15 -W 0.0\textbackslash" -B \textbackslash"functions.SMO -C 1.0 -L 0.001 -P 1.0E-12 -N 0 -V -1 -W 1 -K \textbackslash\textbackslash\textbackslash"functions.supportVector.PolyKernel -E 1.0 -C 250007\textbackslash\textbackslash\textbackslash" -calibrator \textbackslash\textbackslash\textbackslash"functions.Logistic -R 1.0E-8 -M -1 -num-decimal-places 4\textbackslash\textbackslash\textbackslash"\textbackslash"' 5134738557155845452 \\
+(5) & meta.Bagging '-P 100 -S 1 -num-slots 1 -I 10 -W trees.LMT -- -I -1 -M 15 -W 0.0' -115879962237199703 \\
+(6) & meta.AdaBoostM1 '-P 100 -S 1 -I 10 -W trees.DecisionStump' -1178107808933117974 \\
+\end{tabularx}
+}
+\end{table}
+
+LMT seems to be the best algorithm for predicting sterol concentration. It also seems very capable of doing so. One of the most interesting observations of this algorithm is that the constructed tree isn't very complex. The tree can be found in appendix C. The model build by the LMT algorithm could be interpreted as meaning that sterol concentration has a large and significant effect on the bending rigidity, thickness, comprehensibility and area per lipid (APL) of the membrane.
 
 \newpage
 # Discussion and Conclusion
 
 ## Results summary
-The goal of the data exploration was to find possible relations between variables that could give insight into the data. Using these findings could help in refining the research question. Another goal was to clean the dataset so it could be used for machine learning
-From the results gathered by the exploration of the data, we found that there are indeed some relations between variables. We also found that some of these relations could be useful in discerning between sterol types in membranes. The goal of making the data suitable for machine learning was also achieved. 
+
+The goal of this research was to find out whether or not it was possible to use machine learning to predict the composition of a membrane when given the membrane characteristics. The first steps in trying to answer this question were to explore the gathered data to look for possible correlations between variables, and to clean the dataset so it could be used for machine learning experiments. During data exploration a few correlations where found that were later also found using the machine learning algorithms.
+We found that using machine learning we could predict certain components like the aliphatic tails and the sterol concentration with a high degree of accuracy. The average accuracy of both of these component was above 99% accuracy. We also found that it is possible to distinguish between whether or not a sterol is present in the membrane or not, but not between the specific sterols, when using machine learning. The highest accuracy in distinguishing between ergosterol and cholesterol that was achieved was 57.74% accuracy, which is quite low. This is compared to a 99.75% accuracy when only predicting whether or not a sterol is present in the membrane or not.
 
 
 ## Discussion
@@ -397,10 +721,29 @@ In the cleaning of the data, min max normalization was used. This leads to a sup
 
 A few remarks concerning the data quality. The quality of the data seems to be good. There are enough instances, more is usually better, but in this case it probably isn't a necessity. Like mentioned before, the data does seem to be skewed, but this doesn't have to be a big problem. It is a bit worrying to see such high correlation between certain variables, but this may also be expected seeing as the subject of the data is a biological membrane. This is probably also the reason the dataset contains a few outliers.
 
+### Machine learning
+
+#### General discussion of machine learning
+The machine learning experiments could have been done a lot better. This is mostly because there wasn't any kind of parameter optimization that was done. This was mostly caused by problems with Weka. Nevertheless, this could still have lead to improvements in the models.
+Another major subject of discussion would be the attribute selection. Attribute selection was done but not to it's fullest extend, this was due to time restriction. This was also due to the fact that the results would only have mattered if the accuracy saw a significant improvement, which didn't seem likely with an accuracy of > 99%. Another problem attribute selection would cause would be that implementing multiple models in java using Weka becomes a lot harder when attribute selection is used. This is due to the way the Weka dependency is set up. It also probably wouldn't have mattered seeing as due to the fact that the java wrapper uses three models, the chance that the program would still need all of the attributes as input would be quite high. This is due to the fact that when prediction multiple membrane components, you predict multiple components that have different effects on different characteristics of the membrane.
+
+#### Sterol prediction
+Here our findings suggest that it quite hard for machine learning to discern between ergosterol and cholesterol. This would imply that there isn't a major difference between the effect of cholesterol compared to ergosterol on a membrane's properties. When trying to look for this subject in literature, there didn't seem to be many sources. This paper [@hung2016comparative] states that "Our findings do not support the notion that different sterols have a universal behavior that differs only in degree.", this is contradictory to the results found in the [Sterol type] section. This is because the results in this section support the theory that sterols have an almost universal effect on membrane characteristics. The subject of the paper mentioned is on the condensing effect of ergosterol and cholesterol. The paper also states that due to ergosterol's and cholesterol's condensing effect they are considered important regulators of membrane thickness. Another paper [@czub2006comparative] also does a comparison of membranes containing cholesterol and ergosterol, but doesn't mention anything about the properties that we used for our research.
+
 ## Conclusion & Future research
-To conclude, based on the finding of the data exploration it is safe to assume that the sterol type of a given membrane can be predicted by specific measurements of the membrane. This can be said because a multitude of plots states that there is a difference between ratios of variables, that is caused by a specific sterol in the membrane. An example of this is the ratio of area per lipid to bending rigidity, which shows a clear difference between no sterol and a sterol present in the membrane.
-It is also safe to assume that the dataset is suitable for machine learning experiments after some small adjustments and modifications.
-The research that was done can be used to show more insight into sterols effect on characteristics of a membrane. It also gives insight into the dataset, and shows how it can be transformed for use in machine learning. Future research done should focus on the actual usage of machine learning algorithms on the dataset. Something future research could also expand on is maybe predicting multiple labels using the same measurement, or maybe even predicting the entire membrane composition, instead of predicting only one component of the membrane.
+
+To conclude, based on the findings of the machine learning section, we can say that it is possible to predict membrane composition when given membrane characteristics, using machine leaning. This statement is only true to a certain extent. It is possible to predict certain component like the aliphatic tails and the sterol concentration with a high degree of accuracy. This can be said because we found that the accuracy in these predictions is over 99%. It is also possible to predict whether or not a sterol is present in the membrane, but not which sterol this might be.
+Future research should focus on trying to build a model that could possibly discern between different types of sterols. It might be possible to do something like this with a neural network. A neural network could also be used to try and improve the models that where made here for the aliphatic tails and the sterol concentration. Another thing future research could focus on would be trying to make the sterol concentration prediction a regression problem instead of a classification problem. This would mean you could predict the sterol concentration exactly instead of having an approximation.
+
+
+\newpage
+# Project proposal for minor
+An inserting thing to do to expand upon the research done here would be to create a user friendly web application. This could be done in the Application Design (AD) minor. It would be especially important to make it usable both on mobile web devices as on desktops. The fished product should be able to use the machine learning algorithms to predict components of a membrane with  the specified characteristics. The input should be either a file or just simply all of the characteristics and their corresponding value. The output should be an easily readable and good looking display of the predicted components. It could also display the confidence that the predicted label is the actual correct label. The target audience for the application would be scientists/laborants. They could use it to try and make membranes with specific characteristics.
+
+It could also be interesting to try and improve the current models with neural networks, especially the model for predicting the sterol. Maybe a neural network could actualy descern between cholesterol and ergosterol whereas our current models can't. This could be an interesting project for the HighThroughput High Performance Biocomputing (HTHPB) minor.
+
+
+
 
 \newpage
 # Refereces
@@ -686,4 +1029,23 @@ codebook <- as_tibble(codebook)
 kable(codebook, caption = "Codebook") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
+## C, LMT algorithm
+
+=== Classifier model (full training set) ===
+
+Logistic model tree 
+
+bending <= 0.054892: LM_1:116/232 (215)  
+bending > 0.054892  
+|   thickness <= 0.894825  
+|   |   compress <= 0.089242  
+|   |   |   APL <= 0.578692: LM_2:116/580 (894)  
+|   |   |   APL > 0.578692: LM_3:116/580 (1029)  
+|   |   compress > 0.089242: LM_4:116/464 (384)  
+|   thickness > 0.894825: LM_5:116/348 (168)  
+
+Number of Leaves  : 	5
+
+Size of the Tree : 	9
+
 
