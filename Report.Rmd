@@ -31,6 +31,7 @@ library(ggcorrplot)
 library(reshape2)
 library(e1071) 
 library(Hmisc)
+library(forcats)
 ```
 ```{r Data reading & structure, echo=FALSE}
 # Read the data and transform it to a tibble
@@ -183,28 +184,28 @@ p <- ggplot(nona_data, aes(x=bending, colour = factor(sterol.type))) +
   geom_density() +   
   xlab(get_des_by_ab(codebook, "bending")) + 
   ylab("Density") +
-  ggtitle("Bending rigidity density plot") + 
+  ggtitle("Bending rigidity distribution") + 
   labs(colour = get_des_by_ab(codebook, "sterol.type"))
 
 p2 <- ggplot(nona_data, aes(x=APL, colour = factor(sterol.type))) + 
   geom_density() +
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab("Density") +
-  ggtitle("Area per lipid density plot") + 
+  ggtitle("Area per lipid distribution") + 
   labs(colour = get_des_by_ab(codebook, "sterol.type"))
 
 p3 <- ggplot(nona_data, aes(x=compress, colour = factor(sterol.type))) + 
   geom_density() +
   xlab(get_des_by_ab(codebook, "compress")) + 
   ylab("Density") +
-  ggtitle("Compressibility density plot") + 
+  ggtitle("Compressibility distribution") + 
   labs(colour = get_des_by_ab(codebook, "sterol.type"))
 
 p4 <- ggplot(nona_data, aes(x=APL, colour = factor(tails))) + 
   geom_density() +   
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab("Density") +
-  ggtitle("APL density") + 
+  ggtitle("APL distribution") + 
   labs(colour = get_des_by_ab(codebook, "tails"))
 # Plot density plots
 plots <- ggarrange(p, p2, p3, p4,
@@ -213,23 +214,24 @@ plots <- ggarrange(p, p2, p3, p4,
 plots
 ```
 
-```{r APL Bending plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="\\label{fig:APLBending} Correlation between APL and bending regidty, (B) includes a loess regresison line", fig.height = 4, fig.width = 7}
+```{r APL Bending plot, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="\\label{fig:APLBending} Correlation between APL and bending regidty, (B) includes a loess regresison line. Loess regression shows an inverse logorithmic corrolation based on sterol presence.", fig.height = 4, fig.width = 7}
 #Plot APL against bending rigidity
 chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) + 
-  geom_point(alpha=1/10, size=0.5) + 
+  geom_point(alpha=1/20, size=0.5) + 
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending")) + 
   theme(axis.title.y = element_text(size=8)) + 
-  ggtitle("APL against bending rigidity scatter plot") + 
+  ggtitle("Bending rigidity as a function of APL") + 
   scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
                      labels = c("Cholesterol", 
                                 "Ergosterol", 
                                 "No sterol"),                        
-                     values = hue_pal()(3))
+                     values = hue_pal()(3)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
  
 plots <- ggarrange(chart,
                    chart + 
-                     geom_smooth(method = "loess") + ggtitle("APL against bending rigidity, including loess regression"),
+                     geom_smooth(method = "loess") + ggtitle("Bending rigidity as a function of APL, including loess regression"),
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2)
 
@@ -242,7 +244,7 @@ An interesting correlation that was found in the data exploration is shown in fi
 The results of plotting the compressibility of the membrane against the bending rigidity can be found in figure \ref{fig:bendingcompress}. 
 In plot A of figure \ref{fig:bendingcompress} we can't really make out much of a pattern in the dense clout to the left, but when looking at the rest of the data points there does seem to be some grouping based on whether or not no sterol or a sterol is present. When zooming in in plot B it shows the same kind of grouping happen again based on whether there is a sterol present or not. Something else that figure \ref{fig:bendingcompress} shows it that a log transformation on the compressibility variable might be in order seeing as there are a lot of point in the magnitude of tens but also a lot in the hundreds.
 
-```{r bending compress plot, warning=FALSE, echo=FALSE, fig.cap="\\label{fig:bendingcompress} Correlation between bending rigidity and compressibility depending on the sterol type", fig.height = 4, fig.width = 7}
+```{r bending compress plot, warning=FALSE, echo=FALSE, fig.cap="\\label{fig:bendingcompress} Correlation between bending rigidity and compressibility depending on the sterol type.", fig.height = 4, fig.width = 7}
 # Create plot
 chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
   geom_point(alpha=2/10, size=0.5) +
@@ -256,10 +258,11 @@ chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )
                                 "Ergosterol", 
                                 "No sterol"),                        
                      values = hue_pal()(3)) +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 
 chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
-  geom_point(alpha=2/10, size=0.5) +
+  geom_point(alpha=1/10, size=0.5) +
   xlab(get_des_by_ab(codebook, "compress")) +
   ylab(get_des_by_ab(codebook, "bending")) +
   theme(axis.title.y = element_text(size=8)) +
@@ -272,7 +275,8 @@ chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) 
                      values = hue_pal()(3)) +
   scale_x_continuous(limits=c(0,120)) +
   scale_y_continuous(limits=c(0, 45))  +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 
 # Arrange plots
 plots <- ggarrange(chart,
@@ -288,15 +292,16 @@ In figure \ref{fig:aplbending} the area per lipid is again plotted against the b
 The results shown in figure \ref{fig:aplbending} show an interesting pattern. It seems that a specific saturation index is only found in membranes within a specific range of area per lipid and bending rigidity. This is shown by the fact that there seem to be little clusters of color that have formed in the graph. A saturation index of zero and two seem to be the most well defined, seeing as these clusters are basically separate from the other saturation indexes. The saturation indexes of zero point five and one on the other hand seem to have a lot of overlap between them. All of this means that area per lipid to bending rigidity ratio could also be promising in classifying the saturation index of a membrane.
 
 
-```{r APl against bending saturation, echo=FALSE, fig.cap="\\label{fig:aplbending} Correlation between APL and bending regidity based on the sterol type and saturation index", fig.height = 4, fig.width = 7}
+```{r APl against bending saturation, echo=FALSE, fig.cap="\\label{fig:aplbending} Correlation between APL and bending regidity based on the sterol type and saturation index.", fig.height = 4, fig.width = 7}
 # Create plots
 chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
   geom_jitter(alpha=0.1, size=0.5) +  
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending"))  + 
-  ggtitle("APL against bending regidity, 
-          coloured on saturation index, shaped on sterol type") + 
-  theme(plot.title = element_text(size=10))
+  ggtitle("Bending rigidity as a function of APL, 
+          based on saturation index and sterol type") + 
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 chart <- chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_by_ab(codebook, "sterol.type"))
 
 # Arrange plots
@@ -313,9 +318,9 @@ To look for correlation between the variables and to look for clustering a PCA p
 Plot A in figure \ref{fig:pca1} shows something that is quite strange. It states that over 80% of the variance can be explained by the first principle component, this is quite odd. Plot B shows that some of the variables seem to be highly correlated like z order and thickness just like tilt angle and bending rigidity seeing as their arrows are pointing in the same direction. Area per lipid(APL) on the other hand seems to be negatively correlated to z order and thickness.
 When looking at plot C there doesn't seem to be any obvious form of clustering, if any, for that matter.
 
-All of the results from the data exploration led to the following research question: Is it possible to use machine learning to reliably predicts the sterol type in a membrane with a higher than 80% accuracy, given certain measurements like the bending rigidity, the are per lipid and the compressibility?
+All of the results from the data exploration led to the following, refined, research question: "Is it possible to predict membrane composition based on membrane characteristics, with a high degree of accuracy, using machine learning?" With a focus on the sterol type, aliphatic tails and sterol consecration components.
 
-```{r PCA1, echo=FALSE, warning=FALSE, fig.cap="\\label{fig:pca1} Clustering of samples", fig.height = 5, fig.width = 7}
+```{r PCA1, echo=FALSE, warning=FALSE, fig.cap="\\label{fig:pca1} Clustering of samples using PCA.", fig.height = 5, fig.width = 7}
 # Create PCA plot
 res.pca <- prcomp(correlation, scale = TRUE)
 plot1 <- fviz_eig(res.pca) + 
@@ -571,9 +576,7 @@ R-data-frame & 99.47 & 99.54 &        \\
 \end{table}
 
 
-```{r ROC_Tails, echo=FALSE, fig.cap="\\label{fig:roc_tails} Performence mesurement of the RandomForest algorithm using an ROC curve",fig_caption=TRUE}
-#library(pROC)
-
+```{r ROC_Tails, echo=FALSE, fig.cap="\\label{fig:roc_tails} Performence mesurement of the RandomForest algorithm using an ROC curve shows excellent results. The labels for the plots are the following in order from left to right: DI, DO, DP, PI, PO.",fig_caption=TRUE, fig.height = 5, fig.width = 7}
 AUC_calculator <- function(TPR, FPR){
   dFPR <- c(diff(FPR), 0)
   dTPR <- c(diff(TPR), 0)
@@ -583,7 +586,6 @@ AUC_calculator <- function(TPR, FPR){
 ROC_variable_maker <- function(filehandle){
   open_file <- RWeka::read.arff(filehandle)
   AUC <- with(open_file, AUC_calculator(`True Positive Rate`, `False Positive Rate`))
-  #print(head(open_file))
   plot <- ggplot(open_file)+ 
     geom_path(aes(x=`False Positive Rate`,
                   y=`True Positive Rate`,
@@ -604,22 +606,14 @@ ROC_variable_maker <- function(filehandle){
 
 ROC_creator <- function (filefolder){
   files <- list.files(path=filefolder, pattern="*.arff", full.names=TRUE, recursive=FALSE)
-  #print(files)
   plots <- lapply(files, ROC_variable_maker)
-  return(plots)
   
-  # n <- length(plots)
-  # nCols <- floor(sqrt(n))
-  # do.call("grid.arrange", c(plots, ncol= nCols))
+  n <- length(plots)
+  nCols <- floor(sqrt(n))
+  do.call("grid.arrange", c(plots, ncol= nCols))
 }
 
-plots <- ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
-
-n <- length(plots)
-nCols <- floor(sqrt(n))
-#do.call("grid.arrange", c(plots, ncol= nCols))
-grid.arrange(grobs = plots)
-# ggarrange(plotlist=plots)
+ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
 ```
 
 Figure \ref{fig:roc_tails} shows the ROC curve for the RandomForest algorithm for every possible label in the aliphatic tails prediction. Looking at the ROC curves, the RandomForest algorithm seems to preform extremely well seeing as the ROC curves are all basically at right angles. Another metric to measure how well the algorithm preforms is the area under the curve (AUC). All of the ROC curves plotted in table \ref{fig:roc_tails} have an AUC of over 0.99, which is extremely good.
@@ -662,7 +656,7 @@ R-data-frame & 99.94 & 37.81 & $\bullet$ & 82.28 & $\bullet$ & 82.39 & $\bullet$
 }
 \end{table}
 
-Table \ref{table:Ens_Ste_conc} shows that ensamble learning does not improve accuracy in predicting sterol concentration. All of the ensemble learners aren't significantly worse or better, except for adaboost. Adaboost is the only algorithm that preforms significanlty worse. The keys belonging to the experiment shown in table \ref{table:Ens_Ste_conc} can be found in table \ref{table:Ens_Ste_conc_keys}
+Table \ref{table:Ens_Ste_conc} shows that ensamble learning does not improve accuracy in predicting sterol concentration. All of the ensemble learners aren't significantly worse or better, except for adaboost. Adaboost is the only algorithm that preforms significanlty worse. The keys belonging to the experiment shown in table \ref{table:Ens_Ste_conc} can be found in table \ref{table:Ens_Ste_conc_keys}.
 
 \begin{table}[!thbp]
 \caption{\label{table:Ens_Ste_conc}Ensemble learning sterol concentration prediction accuracy}
@@ -694,6 +688,7 @@ R-data-frame & 99.73 & 99.64 &         & 99.80 &         & 99.70 &         & 99.
 }
 \end{table}
 
+\newpage
 LMT seems to be the best algorithm for predicting sterol concentration. It also seems very capable of doing so. One of the most interesting observations of this algorithm is that the constructed tree isn't very complex. The tree can be found in appendix C. The model build by the LMT algorithm could be interpreted as meaning that sterol concentration has a large and significant effect on the bending rigidity, thickness, comprehensibility and area per lipid (APL) of the membrane.
 
 \newpage
@@ -738,9 +733,9 @@ Future research should focus on trying to build a model that could possibly disc
 
 \newpage
 # Project proposal for minor
-An inserting thing to do to expand upon the research done here would be to create a user friendly web application. This could be done in the Application Design (AD) minor. It would be especially important to make it usable both on mobile web devices as on desktops. The fished product should be able to use the machine learning algorithms to predict components of a membrane with  the specified characteristics. The input should be either a file or just simply all of the characteristics and their corresponding value. The output should be an easily readable and good looking display of the predicted components. It could also display the confidence that the predicted label is the actual correct label. The target audience for the application would be scientists/laborants. They could use it to try and make membranes with specific characteristics.
+An inserting thing to do to expand upon the research done here would be to create a user friendly web application. This could be done in the Application Design (AD) minor. It would be especially important to make it usable both on mobile devices as on desktops. This means a web application would probably suffice. The fished product should be able to use the machine learning algorithms to predict components of a membrane with the specified characteristics. The input should be either a file or just simply all of the characteristics and their corresponding value. The output should be an easily readable and good looking display of the predicted components. It could also display the confidence that the predicted label is the actual correct label. The target audience for the application would be scientists/laborants. They could use it to try and make membranes with specific properties.
 
-It could also be interesting to try and improve the current models with neural networks, especially the model for predicting the sterol. Maybe a neural network could actualy descern between cholesterol and ergosterol whereas our current models can't. This could be an interesting project for the HighThroughput High Performance Biocomputing (HTHPB) minor.
+It could also be interesting to try and improve the current models with neural networks, especially the model for predicting the sterol. Maybe a neural network could actually discern between cholesterol and ergosterol whereas our current models can't. This could be an interesting project for the HighThroughput High Performance Biocomputing (HTHPB) minor.
 
 
 
@@ -771,6 +766,7 @@ library(ggcorrplot)
 library(reshape2)
 library(e1071) 
 library(Hmisc)
+library(forcats)
 
 # Read the data and transform it to a tibble
 data <- read.csv("data/dataFrame_all_sims.csv", 
@@ -792,9 +788,7 @@ scaled_data$sterol.type <- nona_data$sterol.type
 # Dataframe used for PCA plot
 correlation <- nona_data[,9:14]
 
-#Read the codebook
 codebook <- read.csv("data/codebook.csv", sep = ",", header=TRUE)
-
 # Get the description by the abbreviation from the codebook
 get_des_by_ab <- function(df, abbreviation){
   description <- df[df$Abbreviation == abbreviation,]$Desciption
@@ -814,17 +808,41 @@ rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum", "Number o
 kable(sum, caption="Five number summary of the original dataset") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 
+# Calculate the skew on every column
+results <- data.frame("Skew" = apply(nona_data[c("temperature","sterol.conc","satur.index",
+                                                 "PC.conc","ethanol.conc","APL", "thickness", "bending",
+                                                 "tilt", "zorder","compress")], 2, skewness, na.rm =TRUE))
+
+# Print results using kable
+kable(t(results), caption="Skew in numeric columns") %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+
 # Make a boxplot of the numeric columns
-nona_data %>% 
-  select("temperature","sterol.conc","satur.index",
-                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
-                      "tilt", "zorder","compress") %>%
-  pivot_longer(., cols = c("temperature","sterol.conc","satur.index",
-                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
-                      "tilt", "zorder","compress"), names_to = "Variable", values_to = "Value") %>%
+plot1 <- nona_data %>% 
+  select("temperature","sterol.conc",
+                      "PC.conc","ethanol.conc","bending",
+                      "tilt","compress") %>%
+  pivot_longer(., cols = c("temperature","sterol.conc",
+                      "PC.conc","ethanol.conc","bending",
+                      "tilt","compress"), names_to = "Variable", values_to = "Value") %>%
   ggplot(aes(x = Variable, y = Value)) +
-  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  ggtitle("Figure 1: Histogram of the variables")
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+plot2 <- nona_data %>% 
+  select("satur.index","APL","thickness","zorder") %>%
+  pivot_longer(., cols = c("satur.index","APL","thickness","zorder"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+plot3 <- nona_data %>% 
+  select("APL") %>%
+  pivot_longer(., cols = c("APL"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+ggarrange(plot1, plot2, plot3,
+          labels = c("A", "B", "C"),
+          ncol = 3, nrow = 1)
 
 # Create density plots
 p <- ggplot(nona_data, aes(x=bending, colour = factor(sterol.type))) + 
@@ -854,62 +872,33 @@ p4 <- ggplot(nona_data, aes(x=APL, colour = factor(tails))) +
   ylab("Density") +
   ggtitle("APL density") + 
   labs(colour = get_des_by_ab(codebook, "tails"))
-
 # Plot density plots
 plots <- ggarrange(p, p2, p3, p4,
                    labels = c("A", "B", "C", "D"),
                    ncol = 2, nrow = 2)
-title <- expression(atop(bold("Figure 2:"), 
-                         scriptstyle(paste("Density plots of multiple",
-                                           " variables coloured on membrane components"
-                                           ))))
-annotate_figure(plots,
-                top=text_grob(title))
-
-# Calculate the skew on every column
-results <- data.frame("Skew" = apply(nona_data[c("temperature",
-                                                 "sterol.conc",
-                                                 "satur.index",
-                                                 "PC.conc",
-                                                 "ethanol.conc",
-                                                 "APL", "thickness",
-                                                 "bending",
-                                                 "tilt", 
-                                                 "zorder",
-                                                 "compress")], 
-                                     2, skewness, na.rm =TRUE))
-
-# Print results using kable
-kable(t(results), caption="Skew in numeric columns") %>%
-  kable_styling(latex_options = c("scale_down", "hold_position"))
+plots
 
 #Plot APL against bending rigidity
 chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) + 
-  geom_point(alpha=1/10, size=0.5) + 
+  geom_point(alpha=1/20, size=0.5) + 
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending")) + 
   theme(axis.title.y = element_text(size=8)) + 
-  ggtitle("APL against bending rigidity scatter plot") + 
+  ggtitle("Bending rigidity as a function of APL") + 
   scale_color_manual(name=get_des_by_ab(codebook, "sterol.type"), 
                      labels = c("Cholesterol", 
                                 "Ergosterol", 
                                 "No sterol"),                        
-                     values = hue_pal()(3))
+                     values = hue_pal()(3)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
  
 plots <- ggarrange(chart,
                    chart + 
-                     geom_smooth(method = "loess") + 
-                     ggtitle("APL against bending rigidity, including loess regression"),
+                     geom_smooth(method = "loess") + ggtitle("Bending rigidity as a function of APL, including loess regression"),
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2)
 
-title <- expression(atop(bold("Figure 3:"), 
-                         scriptstyle(paste("Relation between APL and bending ",
-                                           "rigidity of three different sterol ",
-                                           "types, with and without loess regression line"))))
-# Give the plot a number
-annotate_figure(plots,
-                top=text_grob(title))
+plots
 
 # Create plot
 chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
@@ -924,10 +913,11 @@ chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )
                                 "Ergosterol", 
                                 "No sterol"),                        
                      values = hue_pal()(3)) +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 
 chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
-  geom_point(alpha=2/10, size=0.5) +
+  geom_point(alpha=1/10, size=0.5) +
   xlab(get_des_by_ab(codebook, "compress")) +
   ylab(get_des_by_ab(codebook, "bending")) +
   theme(axis.title.y = element_text(size=8)) +
@@ -940,7 +930,8 @@ chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) 
                      values = hue_pal()(3)) +
   scale_x_continuous(limits=c(0,120)) +
   scale_y_continuous(limits=c(0, 45))  +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 
 # Arrange plots
 plots <- ggarrange(chart,
@@ -948,36 +939,25 @@ plots <- ggarrange(chart,
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2) 
 
-title <- expression(atop(bold("Figure 4:"), 
-                         scriptstyle(paste("Relation between compressibility and bending ",
-                                           "rigidity of three different sterol ",
-                                           "types, full and zoomed"))))
-annotate_figure(plots,
-                top=text_grob(title))
+plots
 
 # Create plots
-chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index),
-                                shape = factor(sterol.type) )) + 
-  geom_jitter(alpha=1, size=0.5) +  
+chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
+  geom_jitter(alpha=0.1, size=0.5) +  
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending"))  + 
   ggtitle("APL against bending regidity, 
           coloured on saturation index, shaped on sterol type") + 
-  theme(plot.title = element_text(size=10))
-chart <- chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"),
-                       shape = get_des_by_ab(codebook, "sterol.type"))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
+chart <- chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_by_ab(codebook, "sterol.type"))
 
 # Arrange plots
 plots <- ggarrange(chart,
                    labels = c("A"),
                    ncol = 1) 
 
-title <- expression(atop(bold("Figure 5:"), 
-                         scriptstyle(paste("Relation between APL and bending ",
-                                           "rigidity of three different sterol ",
-                                           "types with different saturation levels"))))
-annotate_figure(plots,
-                top=text_grob(title))
+plots
 
 # Create PCA plot
 res.pca <- prcomp(correlation, scale = TRUE)
@@ -1004,10 +984,14 @@ plot <- arrangeGrob(plot1,  plot2,
 plot <- as_ggplot(plot) +
   draw_plot_label(label = c("A", "B", "C"), size = 15,
                   x = c(0, 0.5, 0), y = c(1, 1, 0.5))
-title <- expression(atop(bold("Figure 6:"), 
-                         scriptstyle("PCA results using fviz_eig")))
-annotate_figure(plot,
-                top=text_grob(title))
+
+plot
+
+kable(head(data), caption="Top of original data") %>%
+  kable_styling(latex_options = c("scale_down", "hold_position"))
+
+kable(head(scaled_data), caption="Top of cleaned data") %>%
+  kable_styling(latex_options = c("hold_position"), full_width = TRUE)
 
 # Get the five number summary of the selected columns
 sum <- summary(scaled_data[1:5])
@@ -1019,6 +1003,44 @@ rownames(sum) <- c("Minimum", "Q1", "Median", "Mean", "Q3", "Maximum")
 # Print five number summary using kable
 kable(sum, caption="Five number summary of the cleaned dataset") %>%
   kable_styling(latex_options = c("hold_position"), full_width = TRUE)
+
+AUC_calculator <- function(TPR, FPR){
+  dFPR <- c(diff(FPR), 0)
+  dTPR <- c(diff(TPR), 0)
+  abs(sum(TPR * dFPR) + sum(dTPR * dFPR)/2)
+}
+
+ROC_variable_maker <- function(filehandle){
+  open_file <- RWeka::read.arff(filehandle)
+  AUC <- with(open_file, AUC_calculator(`True Positive Rate`, `False Positive Rate`))
+  plot <- ggplot(open_file)+ 
+    geom_path(aes(x=`False Positive Rate`,
+                  y=`True Positive Rate`,
+                  color=Threshold)) +
+    scale_color_gradient2(low="orange", mid="mediumvioletred",
+                          high="purple", midpoint = 0.5) +
+    labs(title= paste("ROC curve, AUC: ", round(AUC, 6)),
+         x = "False Positive Rate (1-Specificity)",
+         y = "True Positive Rate (Sensitivity)") + 
+    theme(plot.title = element_text(size=10),
+          axis.title.x=element_text(size=9),
+          axis.title.y=element_text(size=7),   
+          legend.title = element_text(size = 8),
+          legend.text = element_text(size = 6))
+  return(plot)
+  
+}
+
+ROC_creator <- function (filefolder){
+  files <- list.files(path=filefolder, pattern="*.arff", full.names=TRUE, recursive=FALSE)
+  plots <- lapply(files, ROC_variable_maker)
+  
+  n <- length(plots)
+  nCols <- floor(sqrt(n))
+  do.call("grid.arrange", c(plots, ncol= nCols))
+}
+
+ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
 ```
 
 ## B, The codebook
