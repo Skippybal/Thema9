@@ -8,6 +8,7 @@ output:
     number_sections: true
     extra_dependencies: ["flafter", "tabularx"]
   html_document: default
+bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -155,16 +156,37 @@ paste("Number of NA's before: ", sum(row.has.na),
 
 Here is a boxplor of all of the variables to check for any outliers.
 ```{r Boxplot}
-nona_data %>% 
-  select("temperature","sterol.conc","satur.index",
-                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
-                      "tilt", "zorder","compress") %>%
-  pivot_longer(., cols = c("temperature","sterol.conc","satur.index",
-                      "PC.conc","ethanol.conc","APL", "thickness", "bending",
-                      "tilt", "zorder","compress"), names_to = "Variable", values_to = "Value") %>%
+# Make a boxplot of the numeric columns
+plot1 <- nona_data %>% 
+  select("temperature","sterol.conc",
+                      "PC.conc","ethanol.conc","bending",
+                      "tilt","compress") %>%
+  pivot_longer(., cols = c("temperature","sterol.conc",
+                      "PC.conc","ethanol.conc","bending",
+                      "tilt","compress"), names_to = "Variable", values_to = "Value") %>%
   ggplot(aes(x = Variable, y = Value)) +
-  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  ggtitle("Figure 0: Histogram of the variables")
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+plot2 <- nona_data %>% 
+  select("satur.index","APL","thickness","zorder") %>%
+  pivot_longer(., cols = c("satur.index","APL","thickness","zorder"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+plot3 <- nona_data %>% 
+  select("APL") %>%
+  pivot_longer(., cols = c("APL"), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Variable, y = Value)) +
+  geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+
+plots <- ggarrange(plot1, plot2, plot3,
+                   labels = c("A", "B", "C"),
+                   ncol = 3, nrow = 1)
+
+title <- expression(atop(bold("Figure 0:"), 
+                         scriptstyle("Distribution of data per variable.")))
+annotate_figure(plots,
+                top=text_grob(title))
 ```
 
 The boxplot clearly shows that there are indeed a lot of outliers to be found in the dataset, especially in the bending rigidity, compressibility and tilt ange columns. Outliers are shown as black dots in the plot. Some variables also have very clean distributions, this is mostly because some variables are numerical but only contain a few different levels because of the experiment that they where gathered from.
@@ -276,7 +298,8 @@ chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) +
                      labels = c("Cholesterol", 
                                 "Ergosterol", 
                                 "No sterol"),                        
-                     values = hue_pal()(3))
+                     values = hue_pal()(3)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 
 plots <- ggarrange(chart,
                    chart + 
@@ -354,12 +377,13 @@ Here the APL will be plot against the bending rigidity again, but here the colou
 ```{r}
 # Create plots
 chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
-  geom_jitter(alpha=1, size=0.5) +  
+  geom_jitter(alpha=0.1, size=0.5) +  
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending"))  + 
   ggtitle("APL against bending regidity, 
           coloured on saturation index, shaped on sterol type") + 
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_by_ab(codebook, "sterol.type")) +
   labs(tag = "Figure 6: APL against bending rigidity coloured on saturation index") +
   theme(plot.title = element_text(hjust = 0.5),
@@ -384,10 +408,11 @@ chart <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )
                                 "Ergosterol", 
                                 "No sterol"),                        
                      values = hue_pal()(3)) +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 
 chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) )) +
-  geom_point(alpha=2/10, size=0.5) +
+  geom_point(alpha=1/10, size=0.5) +
   xlab(get_des_by_ab(codebook, "compress")) +
   ylab(get_des_by_ab(codebook, "bending")) +
   theme(axis.title.y = element_text(size=8)) +
@@ -400,7 +425,8 @@ chart2 <- ggplot(nona_data, aes(compress, bending, colour = factor(sterol.type) 
                      values = hue_pal()(3)) +
   scale_x_continuous(limits=c(0,120)) +
   scale_y_continuous(limits=c(0, 45))  +
-  theme(plot.title = element_text(size=10))
+  theme(plot.title = element_text(size=10)) + 
+  guides(colour = guide_legend(override.aes = list(alpha = 1)))
 
 # Arrange plots
 plots <- ggarrange(chart,
@@ -452,7 +478,8 @@ plots <- ggarrange(autoplot(pca_res, data = nona_data,
                                         labels = c("Cholesterol", 
                                                    "Ergosterol", 
                                                    "No sterol"),                        
-                                        values = hue_pal()(3)),
+                                        values = hue_pal()(3)) + 
+                     guides(colour = guide_legend(override.aes = list(alpha = 1))),
                    autoplot(pca_res, data = nona_data, 
                             colour = 'sterol.type', alpha=1/5, 
                             size = 1/2) + 
@@ -463,7 +490,8 @@ plots <- ggarrange(autoplot(pca_res, data = nona_data,
                                                    "No sterol"),                        
                                         values = hue_pal()(3)) +
                      scale_x_continuous(limits=c(-0.03,0.025)) +
-                     scale_y_continuous(limits=c(-0.03,0.04)),
+                     scale_y_continuous(limits=c(-0.03,0.04)) + 
+                     guides(colour = guide_legend(override.aes = list(alpha = 1))),
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2)
 # Add title
@@ -1269,10 +1297,13 @@ I need to make this very clear.
 The EDA was made with a specific question in mind. This probably exposed the exploration steps to an subconscious bias when making plots and exploring relations between variables.
 
 
-# Sources
+\newpage
+# Refereces
 
-https://link.springer.com/content/pdf/10.1007/s10994-005-0466-3.pdf
+---
+nocite: '@*'
+---
 
-Czub, J., & Baginski, M. (2006). Comparative molecular dynamics study of lipid membranes containing cholesterol and ergosterol. Biophysical journal, 90(7), 2368-2382.
+<div id="refs"></div>
 
-Hung, W. C., Lee, M. T., Chung, H., Sun, Y. T., Chen, H., Charron, N. E., & Huang, H. W. (2016). Comparative study of the condensing effects of ergosterol and cholesterol. Biophysical journal, 110(9), 2026-2033.
+
