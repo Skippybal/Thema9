@@ -1114,8 +1114,8 @@ R-data-frame & 99.47 & 99.54 &        \\
 
 As we can see in table \ref{table:att_ac}, attribute selection doesn't make a significant difference in results. This would lead to the conclusion that it is probably best to run the model with less attributes, seeing as less input would be better. However, for the final program it isn't actually that useful to use less attributes seeing as we'll be using a multitude of models to predict multiple components of the given membrane. Most of these models use different attributes, so we'll probably still need all of them as input for our program.
 
-#### A comment on paramater optimization
-I would love to be able to do some paramater optimization on the LMT and RandomForest algorithms. However, whenever I try to do this, Weka won't let me. It constantly gives errors, which is the reason why there isn't a complete subchapter on this subject.
+#### A comment on hyperparamater selection/optimization
+I would love to be able to do some parameter optimization on the LMT and RandomForest algorithms. However, whenever I try to do this, Weka won't let me. It constantly gives errors, which is the reason why there isn't a complete subchapter on this subject.
 
 
 #### ROC curve

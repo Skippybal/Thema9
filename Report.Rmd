@@ -711,7 +711,7 @@ A few remarks concerning the data quality. The quality of the data seems to be g
 ### Machine learning
 
 #### General discussion of machine learning
-The machine learning experiments could have been done a lot better. This is mostly because there wasn't any kind of parameter optimization that was done. This was mostly caused by problems with Weka. Nevertheless, this could still have lead to improvements in the models.
+The machine learning experiments could have been done a lot better. This is mostly because there wasn't any kind of hyperparameter selection/optimization that was done. This was mostly caused by problems with Weka. Nevertheless, this could still have lead to improvements in the models.
 Another major subject of discussion would be the attribute selection. Attribute selection was done but not to it's fullest extend, this was due to time restriction. This was also due to the fact that the results would only have mattered if the accuracy saw a significant improvement, which didn't seem likely with an accuracy of > 99%. Another problem attribute selection would cause would be that implementing multiple models in java using Weka becomes a lot harder when attribute selection is used. This is due to the way the Weka dependency is set up. It also probably wouldn't have mattered seeing as due to the fact that the java wrapper uses three models, the chance that the program would still need all of the attributes as input would be quite high. This is due to the fact that when prediction multiple membrane components, you predict multiple components that have different effects on different characteristics of the membrane.
 
 #### Sterol prediction
