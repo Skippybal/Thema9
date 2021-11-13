@@ -807,8 +807,9 @@ kable(sum, caption="Five number summary of the original dataset") %>%
 
 # Calculate the skew on every column
 results <- data.frame("Skew" = apply(nona_data[c("temperature","sterol.conc","satur.index",
-                                                 "PC.conc","ethanol.conc","APL", "thickness", "bending",
-                                                 "tilt", "zorder","compress")], 2, skewness, na.rm =TRUE))
+                                                 "PC.conc","ethanol.conc","APL", "thickness",
+                                                 "bending", "tilt", "zorder","compress")], 
+                                     2, skewness, na.rm =TRUE))
 
 # Print results using kable
 kable(t(results), caption="Skew in numeric columns") %>%
@@ -827,7 +828,8 @@ plot1 <- nona_data %>%
 
 plot2 <- nona_data %>% 
   select("satur.index","APL","thickness","zorder") %>%
-  pivot_longer(., cols = c("satur.index","APL","thickness","zorder"), names_to = "Variable", values_to = "Value") %>%
+  pivot_longer(., cols = c("satur.index","APL","thickness","zorder"), 
+               names_to = "Variable", values_to = "Value") %>%
   ggplot(aes(x = Variable, y = Value)) +
   geom_boxplot() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
 
@@ -891,7 +893,8 @@ chart <- ggplot(nona_data, aes(APL, bending, colour = factor(sterol.type) )) +
  
 plots <- ggarrange(chart,
                    chart + 
-                     geom_smooth(method = "loess") + ggtitle("Bending rigidity as a function of APL, including loess regression"),
+                     geom_smooth(method = "loess") + 
+                     ggtitle("Bending rigidity as a function of APL, including loess regression"),
                    labels = c("A", "B"),
                    ncol = 1, nrow = 2)
 
@@ -939,7 +942,8 @@ plots <- ggarrange(chart,
 plots
 
 # Create plots
-chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shape = factor(sterol.type) )) + 
+chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), 
+                                shape = factor(sterol.type) )) + 
   geom_jitter(alpha=0.1, size=0.5) +  
   xlab(get_des_by_ab(codebook, "APL")) + 
   ylab(get_des_by_ab(codebook, "bending"))  + 
@@ -947,7 +951,8 @@ chart2 <- ggplot(nona_data, aes(APL, bending, colour = factor(satur.index), shap
           coloured on saturation index, shaped on sterol type") + 
   theme(plot.title = element_text(size=10)) + 
   guides(colour = guide_legend(override.aes = list(alpha = 1)))
-chart <- chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), shape = get_des_by_ab(codebook, "sterol.type"))
+chart <- chart2 + labs(colour = get_des_by_ab(codebook, "satur.index"), 
+                       shape = get_des_by_ab(codebook, "sterol.type"))
 
 # Arrange plots
 plots <- ggarrange(chart,
@@ -1040,6 +1045,7 @@ ROC_creator <- function (filefolder){
 ROC_creator("./Experiment/Results_Explorer/ROC_Curve")
 ```
 
+\newpage
 ## B, The codebook
 ```{r}
 codebook <- read.csv("data/codebook.csv", sep = ",", header=TRUE)
@@ -1048,6 +1054,8 @@ codebook <- as_tibble(codebook)
 kable(codebook, caption = "Codebook") %>%
   kable_styling(latex_options = c("scale_down", "hold_position"))
 ```
+
+\newpage
 ## C, LMT algorithm
 
 === Classifier model (full training set) ===
