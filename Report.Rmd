@@ -372,7 +372,7 @@ kable(sum, caption="Five number summary of the cleaned dataset") %>%
 
 \newpage
 ## Machine learning
-The dataset for every machine learning experiment was manipulated in such a way that the column containing the label was put as the last column of the dataset. The first few columns where always: area per lipit (APL), thickness, bending rigidity, tilt angle, zorder and compressibility. In that order. In the tables the used dataset is always shown as R-data-frame. All of the experiments where done with a p-value of 0.05. In the result tables showing the achieved accuracies, the white dots indicate a significant improvement in accuracy while the black dots denote a significant decrease in accuracy. The key tables show the exact settings for each algorithm for every experiment.
+The dataset for every machine learning experiment was manipulated in such a way that the column containing the label was put as the last column of the dataset. The first few columns where always: area per lipit (APL), thickness, bending rigidity, tilt angle, zorder and compressibility. In that order. In the tables the used dataset is always shown as R-data-frame. All of the experiments where done with a p-value of 0.05. In the result tables showing the achieved accuracies, the white dots indicate a significant improvement in accuracy while the black dots denote a significant decrease in accuracy. In the tables the header line consists of numbers, these are the keys for every algorithm. The key tables show the exact settings for each algorithm for every experiment.
 
 ### Sterol type
 
@@ -1057,7 +1057,7 @@ kable(codebook, caption = "Codebook") %>%
 ```
 
 \newpage
-## C, LMT algorithm
+## C, LMT model
 
 === Classifier model (full training set) ===
 
