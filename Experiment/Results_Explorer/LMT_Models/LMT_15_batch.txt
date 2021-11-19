@@ -1,0 +1,246 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.LMT -I -1 -M 15 -W 0.0
+Relation:     R_data_frame
+Instances:    2690
+Attributes:   7
+              APL
+              thickness
+              bending
+              tilt
+              zorder
+              compress
+              sterol.conc
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+Logistic model tree 
+------------------
+
+bending <= 0.054892: LM_1:116/232 (215)
+bending > 0.054892
+|   thickness <= 0.894825
+|   |   compress <= 0.089242
+|   |   |   APL <= 0.578692: LM_2:116/580 (894)
+|   |   |   APL > 0.578692: LM_3:116/580 (1029)
+|   |   compress > 0.089242: LM_4:116/464 (384)
+|   thickness > 0.894825: LM_5:116/348 (168)
+
+Number of Leaves  : 	5
+
+Size of the Tree : 	9
+
+LM_1:
+Class 0 :
+19.87 + 
+[APL] * -69 +
+[thickness] * -49.89 +
+[bending] * 36.18 +
+[tilt] * 0.01 +
+[zorder] * -17.36 +
+[compress] * -1.77
+
+Class 10 :
+-80.36 + 
+[APL] * -24.15 +
+[thickness] * -10.5 +
+[bending] * -79.12 +
+[tilt] * 27.5 +
+[zorder] * 68.97 +
+[compress] * -1.08
+
+Class 20 :
+-100.48 + 
+[APL] * 14.86 +
+[thickness] * 13.69 +
+[bending] * 1.41 +
+[compress] * -1
+
+Class 30 :
+-254.18 + 
+[APL] * 173.32 +
+[thickness] * 62.94 +
+[bending] * 1320.24 +
+[tilt] * -3.15
+
+
+
+
+LM_2:
+Class 0 :
+260.73 + 
+[APL] * -363.76 +
+[thickness] * -31.81 +
+[bending] * -813.21 +
+[tilt] * 30.28 +
+[zorder] * 51.92 +
+[compress] * -245.84
+
+Class 10 :
+155.25 + 
+[APL] * -186.07 +
+[thickness] * -108.08 +
+[bending] * 15.33 +
+[tilt] * -4.54 +
+[zorder] * -40.66 +
+[compress] * -88.43
+
+Class 20 :
+-93.4 + 
+[APL] * 103.45 +
+[thickness] * 81.77 +
+[bending] * -7.39 +
+[tilt] * -1.65 +
+[zorder] * 11.77 +
+[compress] * 34.37
+
+Class 30 :
+-293.25 + 
+[APL] * 322.75 +
+[thickness] * 200.6 +
+[bending] * -8.94 +
+[tilt] * -8.25 +
+[zorder] * 63.37 +
+[compress] * 115.2
+
+LM_3:
+Class 0 :
+96.69 + 
+[APL] * -251.7 +
+[thickness] * -31.81 +
+[bending] * -610.41 +
+[tilt] * 30.28 +
+[zorder] * 51.92 +
+[compress] * -173.51
+
+Class 10 :
+179.32 + 
+[APL] * -204.25 +
+[thickness] * -164.3 +
+[bending] * 243.99 +
+[tilt] * -551.59 +
+[zorder] * -7.35 +
+[compress] * -84.07
+
+Class 20 :
+-56.06 + 
+[APL] * 60.73 +
+[thickness] * 68.65 +
+[bending] * -24.18 +
+[tilt] * 18.64 +
+[zorder] * -5.67 +
+[compress] * -40.15
+
+Class 30 :
+-317.73 + 
+[APL] * 319.2 +
+[thickness] * 304.93 +
+[bending] * -19.95 +
+[tilt] * 16.49 +
+[compress] * 69.65
+
+LM_4:
+Class 0 :
+164.31 + 
+[APL] * -528.45 +
+[thickness] * -31.81 +
+[bending] * -301.62 +
+[tilt] * 30.28 +
+[zorder] * 51.92 +
+[compress] * 64.33
+
+Class 10 :
+-1938.49 + 
+[APL] * -1206.88 +
+[thickness] * 2341.35 +
+[bending] * 12.55 +
+[tilt] * 63.89 +
+[zorder] * -7.35 +
+[compress] * -0.63
+
+Class 20 :
+76.36 + 
+[APL] * -124.53 +
+[thickness] * 49.58 +
+[bending] * 3.44 +
+[tilt] * -2.89 +
+[zorder] * -101.26 +
+[compress] * 9.79
+
+Class 30 :
+-289.29 + 
+[APL] * 364.03 +
+[thickness] * 154.8 +
+[bending] * -8.94 +
+[tilt] * -8.25 +
+[zorder] * 90.21 +
+[compress] * 7.86
+
+LM_5:
+Class 0 :
+38.42 + 
+[APL] * -115.43 +
+[thickness] * -31.81 +
+[bending] * -187.43 +
+[tilt] * 22.44 +
+[zorder] * 10.81 +
+[compress] * 2.75
+
+Class 10 :
+-55.56 + 
+[APL] * 128.25 +
+[thickness] * -47.41 +
+[bending] * 55.16 +
+[tilt] * 6.69 +
+[zorder] * -7.35 +
+[compress] * -1.8
+
+Class 20 :
+-123.95 + 
+[APL] * 34.88 +
+[thickness] * 35.67 +
+[bending] * -1.16 +
+[zorder] * 1.18 +
+[compress] * 0.73
+
+Class 30 :
+-201.48 + 
+[APL] * 118.32 +
+[thickness] * 110.78 +
+[bending] * -1.92 +
+[tilt] * -8.25 +
+[compress] * 1.96
+
+
+Time taken to build model: 3 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances        2684               99.777  %
+Incorrectly Classified Instances         6                0.223  %
+Kappa statistic                          0.997 
+Mean absolute error                      0.0112
+Root mean squared error                  0.042 
+Relative absolute error                  3.0336 %
+Root relative squared error              9.7883 %
+Total Number of Instances             2690     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 1.000    0.000    0.997      1.000    0.999      0.999    1.000     0.999     0
+                 0.994    0.000    1.000      0.994    0.997      0.995    1.000     1.000     10
+                 1.000    0.003    0.994      1.000    0.997      0.995    1.000     1.000     20
+                 0.999    0.000    1.000      0.999    0.999      0.999    0.999     0.999     30
+Weighted Avg.    0.998    0.001    0.998      0.998    0.998      0.997    1.000     1.000     
+
+=== Confusion Matrix ===
+
+   a   b   c   d   <-- classified as
+ 392   0   0   0 |   a = 0
+   0 774   5   0 |   b = 10
+   0   0 770   0 |   c = 20
+   1   0   0 748 |   d = 30
+
